@@ -1,0 +1,24 @@
+{
+    "root": true,
+    "env": {
+        "node": true,
+        "commonjs": true
+    },
+    "extends": [
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "tsconfig.json",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"], // we want to force semicolons
+        "indent": ["error", 4], // we use tap to indent our code
+        "no-multi-spaces": ["error"]// we want to avoid extraneous spaces
+    }
+}
