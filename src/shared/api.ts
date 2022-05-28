@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import { authRouter } from '../modules/auth/routes/auth.router';
 
 const api = Router();
 
-api.use('/auth', authRouter);
+// api.use('/auth', () =>);
 
 export {
     api

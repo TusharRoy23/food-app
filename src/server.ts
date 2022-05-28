@@ -1,25 +1,104 @@
-import { Request, Response } from 'express';
-import 'reflect-metadata';
-import dotenv from 'dotenv';
-import path from 'path';
-import { app } from './app';
-import { MongoService } from './shared/services/mongo.service';
-// import http from 'http';
+import express, { Request, Response, NextFunction } from 'express';
 
-dotenv.config({ 
-    path: path.join(__dirname, '..', `env/.env.${process.env.NODE_ENV}`) 
+import { InversifyExpressServer } from 'inversify-express-utils';
+import container from './core/container.core';
+import { HttpStatusCode } from './shared/utils/enum';
+import { 
+    BadRequestException, 
+    NotFoundException, 
+    InternalServerErrorException, 
+    UnauthorizedException, 
+    ConflictException, 
+    ForbiddenException, 
+    MethodNotAllowedException, 
+    RequestTimeoutException 
+} from './shared/errors/all.exception';
+
+export const server = new InversifyExpressServer(container);
+server.setConfig(app => {
+    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
 });
 
-async function bootstrap() {
-    const PORT = process.env.APP_PORT || 8000;
-    // const server = http.createServer(app);
-
-    const mongoService = new MongoService();
-    await mongoService.mongoConnect();
-    
-    app.listen(PORT, (): void => {
-        console.log(`Listening on port ${PORT}..`);
+const errorResponse = (req: Request, res: Response, message: string, statusCode: any, error?: any) => {
+    return res.status(statusCode).json({
+        statusCode: statusCode,
+        success: false,
+        message: message,
+        error: error || []
     });
 }
 
-bootstrap();
+server.setErrorConfig(app => {
+    app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+
+        if (error instanceof NotFoundException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.NOT_FOUND,
+            );
+        }
+
+        if (error instanceof BadRequestException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.BAD_REQUEST,
+                error.validationErrors,
+            );
+        }
+
+        if (error instanceof InternalServerErrorException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.INTERNAL_SERVER,
+            );
+        }
+        if (error instanceof UnauthorizedException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.UNAUTHORIZED,
+            );
+        }
+        if (error instanceof ConflictException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.CONFLICT,
+            );
+        }
+        if (error instanceof ForbiddenException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.FORBIDDEN,
+            );
+        }
+        if (error instanceof MethodNotAllowedException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.METHOD_NOT_ALLOWED,
+            );
+        }
+        if (error instanceof RequestTimeoutException) {
+            return errorResponse(
+                req, 
+                res, 
+                error.message, 
+                HttpStatusCode.REQUEST_TIMEOUT,
+            );
+        }
+        next(error);
+    });
+})
