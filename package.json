@@ -2,11 +2,20 @@
   "name": "food-app",
   "version": "1.0.0",
   "description": "Express.js application",
-  "main": "src/server.ts",
+  "main": "src/main.ts",
   "scripts": {
-    "lint": "eslint . --ext .ts",
-    "start": "NODE_ENV=dev ts-node-dev --respawn --transpile-only src/server.ts",
-    "build-dev": "tsc && node ./dist/server.js"
+    "lint": "eslint . --ext .js,.ts",
+    "start": "NODE_ENV=dev ts-node --transpile-only src/main.ts",
+    "start:dev": "npm run build && node dist/main.js",
+    "start:watch": "nodemon --trace-warnings",
+    "build-dev": "tsc && node ./dist/main.js",
+    "build": "tsc",
+    "typeorm": "ts-node --require tsconfig-paths/register ./node_modules/typeorm/cli.js -d src/datasource.config.ts",
+    "typeorm:create": "npm run typeorm migration:create",
+    "typeorm:generate": "npm run typeorm migration:generate",
+    "typeorm:run": "npm run typeorm migration:run",
+    "typeorm:revert": "npm run typeorm migration:revert",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -19,26 +28,35 @@
   },
   "homepage": "https://github.com/TusharRoy23/food-app#readme",
   "dependencies": {
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.2",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "mongoose": "^6.3.0",
+    "inversify": "^6.0.1",
+    "inversify-express-utils": "^6.4.3",
+    "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
-    "tsyringe": "^4.6.0",
-    "typedi": "^0.10.0"
+    "typeorm": "^0.3.6",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.3.1",
     "@types/express": "^4.17.13",
-    "@types/node": "^17.0.25",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^17.0.31",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.5.1",
+    "jest": "^27.2.5",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2",
-    "supertest": "^6.2.2",
-    "ts-node-dev": "^1.1.8",
-    "typescript": "^4.6.3"
+    "supertest": "^6.2.3",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.0.0",
+    "typescript": "^4.6.4"
   }
 }

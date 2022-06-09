@@ -1,28 +1,35 @@
 import { Request, Response } from 'express';
-import { injectable, autoInjectable } from 'tsyringe';
-import AuthService from '../service/auth.service';
+import { inject } from 'inversify';
+import { controller, httpPost, requestBody } from 'inversify-express-utils';
+import { TYPES } from '../../../core/type.core';
+import { IAuthService } from '../interfaces/IAuth.service';
+import { DtoValidationMiddleware } from '../../../middlewares/dto-validation.middleware';
+import { SignInCredentialsDto, SignUpCredentialsDto } from '../dto/index.dto';
 
-@autoInjectable()
-export default class AuthController {
+
+@controller('/auth')
+export class AuthController {
     constructor(
-        private authService?: AuthService
-    ) { 
+        @inject(TYPES.IAuthService) private readonly authService: IAuthService,
+    ) {}
+
+    @httpPost('/signup', DtoValidationMiddleware(SignUpCredentialsDto))
+    public async create(
+        @requestBody() body: SignUpCredentialsDto, req: Request, res: Response
+    ) {
+        const msg = await this.authService.createUser(body);
+        return res.status(201).json({
+            'message': msg
+        });
     }
 
-    async userRegistration (req: Request, res: Response) {
-        console.log('req: ', req.body);
-        try {
-            const payload = req.body;
-            const value = await this.authService.userRegistration(payload);
-
-            return res.status(201).json({
-                'result' : value
-            });
-        } catch (error) {
-            console.log('error: ', error);
-            return res.status(500).json({
-                error: 'Internal server error'
-            });
-        }
+    @httpPost('/signin', DtoValidationMiddleware(SignInCredentialsDto))
+    public async signIn(
+        @requestBody() body: SignInCredentialsDto, req: Request, res: Response
+    ) {
+        const user = await this.authService.signIn(body);
+        return res.status(200).json({
+            results: user
+        });
     }
 }

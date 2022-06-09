@@ -1,0 +1,49 @@
+version: '3'
+services:
+  db:
+    container_name: food-app-db
+    image: postgres
+    restart: always
+    env_file:
+      - ./env/.env.dev
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - food_app_api
+  pgamin:
+    container_name: food-app-pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    env_file:
+      - ./env/.env.dev
+    ports: 
+      - "${WEBSERVER_PORT}:${PGADMIN_LISTEN_PORT}"
+    volumes: 
+      - ./pgadmin-data:/var/lib/pgadmin # Named volumn in container
+    depends_on: 
+      - db
+    networks:
+      - food_app_api
+  dev:
+    container_name: food-app-dev
+    image: food-app-api
+    env_file:
+      - ./env/.env.dev
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile-dev
+    volumes:
+      - .:/app # create volumn in current directory of container
+      - /app/node_modules # anonymus/unnamed volumn in container
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - food_app_api
+networks:
+  food_app_api:
+volumes:
+  pgdata:
+  pgadmin-data:
