@@ -4,7 +4,7 @@ import { controller, httpPost, requestBody } from 'inversify-express-utils';
 import { TYPES } from '../../../core/type.core';
 import { IAuthService } from '../interfaces/IAuth.service';
 import { DtoValidationMiddleware } from '../../../middlewares/dto-validation.middleware';
-import { SignInCredentialsDto, SignUpCredentialsDto } from '../dto/index.dto';
+import { SignInCredentialsDto, SignUpCredentialsDto, RefreshTokenDto } from '../dto/index.dto';
 
 
 @controller('/auth')
@@ -30,6 +30,16 @@ export class AuthController {
         const user = await this.authService.signIn(body);
         return res.status(200).json({
             results: user
+        });
+    }
+
+    @httpPost('/refresh-token', TYPES.AuthenticationMiddleware)
+    public async refreshToken(
+        @requestBody() body: RefreshTokenDto, req: Request, res: Response
+    ) {
+        const value = await this.authService.getAccessToken(body);
+        return res.status(200).json({
+            results: value
         });
     }
 }

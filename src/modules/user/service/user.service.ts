@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../core/type.core";
 import { IUserRepository } from "../interfaces/IUser.repository";
-import { User } from "../entity/user.entity";
 import { IUserService } from "../interfaces/IUser.service";
+import { User } from "../entity/user.entity";
 
 @injectable()
 export class UserService implements IUserService {
