@@ -16,19 +16,18 @@ describe('User Service Test', () => {
         userService = new UserService(mockUserRepo);
     });
     
-    describe('Call (getById) method', () => {
+    describe('Call (getByUuid) method', () => {
         it('Should return a user', async () => {
             const test = await userService.getUser(userResponse.uuid);
             expect(test).toEqual(userResponse);
         });
         
-        it('Should call (getById) of auth repository', () => {
+        it('Should call (getByUuid) of auth repository', () => {
             expect(mockUserRepo.getByUuid).toHaveBeenCalled();
         });
     
-        it('Should not call (getById) of auth repository without ID', () => {
-            const getById = jest.spyOn(mockUserRepo, 'getByUuid');
-            expect(getById).not.toHaveBeenCalledWith();
+        it('Should not call (getByUuid) of auth repository without ID', () => {
+            expect(mockUserRepo.getByUuid).not.toHaveBeenCalledWith();
         });
     });
 });
