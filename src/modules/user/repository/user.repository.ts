@@ -11,10 +11,10 @@ export class UserRepository implements IUserRepository {
         @inject(TYPES.IDatabaseService) private readonly database: IDatabaseService 
     ) {}
 
-    async getById(userId: number): Promise<User> {
+    async getByUuid(uuid: string): Promise<User> {
         try {
             const repo = await this.database.getRepository(User);
-            const results = await repo.findOneBy({ id: userId });
+            const results = await repo.findOne({ where: { uuid: uuid } });
             if (results) {
                 return results as User;
             }

@@ -10,11 +10,11 @@ export class UserController {
         @inject(TYPES.IUserService) private readonly userService: IUserService
     ) {}
 
-    @httpGet('/:userId')
+    @httpGet('/:uuid')
     public async getUser(
-        @requestParam('userId') userId: number, req: Request, res: Response
+        @requestParam('uuid') uuid: string, req: Request, res: Response
     ) {
-        const results = await this.userService.getUser(userId);
+        const results = await this.userService.getUser(uuid);
         return res.status(200).json({
             'results': results
         });

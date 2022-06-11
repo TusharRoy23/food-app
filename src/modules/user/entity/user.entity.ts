@@ -1,12 +1,15 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { IsEmail, validateOrReject } from 'class-validator';
-import { hashPassword, isPasswordMatch } from '../../../shared/utils/password.utils';
 import { classToPlain, Exclude } from 'class-transformer';
+import { hashPassword, isPasswordMatch } from '../../../shared/utils/password.utils';
 import { CurrentStatus, UserRole, UserType } from '../../../shared/utils/enum';
+import { Restaurent } from '../../restaurent/entity/restaurent.entity';
+import { UserInfo } from './user-info.entity';
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
+    @Exclude({ toPlainOnly: true })
     id: number;
 
     @Column({ nullable: false, type: 'varchar' })
@@ -21,8 +24,19 @@ export class User {
     @Exclude({ toPlainOnly: true })
     password: string;
 
-    @Column({ nullable: true, type: 'int'})
-    restaurent_id: number;
+    @ManyToOne(
+        type => Restaurent,
+        restaurent => restaurent.user,
+        { eager: false }
+    )
+    restaurent: Restaurent;
+    
+    @OneToOne(
+        type => UserInfo,
+        { eager: true }
+    )
+    @JoinColumn()
+    user_info: UserInfo
 
     @Column({ 
         type: 'enum',
@@ -39,20 +53,14 @@ export class User {
     role: string;
 
     @Column({ 
-        nullable: false, 
-        type:'enum', 
+        type: 'enum', 
+        enum: CurrentStatus, 
         default: CurrentStatus.ACTIVE 
     })
-    current_status: CurrentStatus;
+    current_status: string;
 
     toJSON() {
         return classToPlain(this);
-    }
-
-    @BeforeInsert()
-    @BeforeUpdate()
-    async validate() {
-        await validateOrReject(this);
     }
 
     async doPasswordhashing(password: string): Promise<string> {
@@ -61,5 +69,11 @@ export class User {
 
     async validatePassword(password: string, hashPassword: string): Promise<boolean> {
         return await isPasswordMatch(hashPassword, password);
+    }
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async validate() {
+        await validateOrReject(this);
     }
 }

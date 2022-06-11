@@ -9,7 +9,7 @@ describe('User Service Test', () => {
     const userResponse: User = fakeUser;
 
     const mockUserRepo: IUserRepository = {
-        getById: jest.fn(() => Promise.resolve(userResponse)),
+        getByUuid: jest.fn(() => Promise.resolve(userResponse)),
     }
 
     beforeAll(() => {
@@ -18,16 +18,16 @@ describe('User Service Test', () => {
     
     describe('Call (getById) method', () => {
         it('Should return a user', async () => {
-            const test = await userService.getUser(userResponse.id);
+            const test = await userService.getUser(userResponse.uuid);
             expect(test).toEqual(userResponse);
         });
         
         it('Should call (getById) of auth repository', () => {
-            expect(mockUserRepo.getById).toHaveBeenCalled();
+            expect(mockUserRepo.getByUuid).toHaveBeenCalled();
         });
     
         it('Should not call (getById) of auth repository without ID', () => {
-            const getById = jest.spyOn(mockUserRepo, 'getById');
+            const getById = jest.spyOn(mockUserRepo, 'getByUuid');
             expect(getById).not.toHaveBeenCalledWith();
         });
     });

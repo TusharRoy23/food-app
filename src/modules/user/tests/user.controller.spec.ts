@@ -11,11 +11,11 @@ describe('User Controller Test', () => {
 
     describe('Get A User', () => {
         it('Index', (done) => {
-            agent.get(`/users/${fakeUser.id}`).expect(200, done);
+            agent.get(`/users/${fakeUser.uuid}`).expect(200, done);
         });
     
         it('Should Responsed with a user', (done) => {
-            agent.get(`/users/${fakeUser.id}`)
+            agent.get(`/users/${fakeUser.uuid}`)
                 .expect(200)
                 .then((response) => {
                     expect(response.body.results.email).toStrictEqual(fakeUser.email);

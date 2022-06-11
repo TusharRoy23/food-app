@@ -20,13 +20,13 @@ export class FakeAuthService implements IAuthService {
 
 @injectable()
 export class FakeUserService implements IUserService {
-    async getUser(userId: number): Promise<User> {
+    async getUser(uuid: string): Promise<User> {
         return await Promise.resolve(fakeUser);
     }
 }
 
 export class FakeRepository {
-    findOneBy(response: any) {
+    findOne(response: any) {
         return jest.fn(() => Promise.resolve(response))
     }
     create(response: any) {

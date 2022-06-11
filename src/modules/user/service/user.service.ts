@@ -10,8 +10,8 @@ export class UserService implements IUserService {
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository
     ) {}
 
-    async getUser(userId: number): Promise<User> {
-        return await this.userRepository.getById(userId);     
+    async getUser(uuid: string): Promise<User> {
+        return await this.userRepository.getByUuid(uuid);     
     }
     
 }

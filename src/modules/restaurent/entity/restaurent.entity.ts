@@ -1,13 +1,14 @@
 import { validateOrReject } from 'class-validator';
 import { CurrentStatus } from '../../../shared/utils/enum';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
 export class Restaurent {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: false, type: 'varchar' })
+    @Column({ type: 'varchar' })
     uuid: string;
 
     @Column({ type: 'varchar' })
@@ -17,8 +18,12 @@ export class Restaurent {
     @Column({ type: 'text' })
     address: string;
 
-    @Column({ type: 'int', nullable: false })
-    creator_id: number;
+    @OneToMany(
+        type => User,
+        user => user.restaurent,
+        { eager: false }
+    )
+    user: User[];
 
     @Column({ nullable: true, type: 'text'})
     profile_img: string;

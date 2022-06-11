@@ -11,7 +11,7 @@ describe('User Repository Test', () => {
     const fakeRepo = new FakeRepository();
 
     const fakeMethods = {
-        findOneBy: fakeRepo.findOneBy(userResponse)
+        findOne: fakeRepo.findOne(userResponse)
     };
 
     const dbService: IDatabaseService = {
@@ -35,38 +35,38 @@ describe('User Repository Test', () => {
     });
 
     describe('Success Responses', () => {
-        it('getById return user response', async () => {
-            const results = await userRepository.getById(userResponse.id);
+        it('getByUuid return user response', async () => {
+            const results = await userRepository.getByUuid(userResponse.uuid);
             expect(results.email).toEqual(userResponse.email);
         });
 
-        it('getById function called', async () => {
-            const spy = jest.spyOn(userRepository, 'getById');
-            await userRepository.getById(fakeUser.id);
+        it('getByUuid function called', async () => {
+            const spy = jest.spyOn(userRepository, 'getByUuid');
+            await userRepository.getByUuid(fakeUser.uuid);
             expect(spy).toHaveBeenCalled();
         });
 
-        it('number of calls 1 in getById', async () => {
-            const spy = jest.spyOn(userRepository, 'getById');
-            await userRepository.getById(fakeUser.id);
+        it('number of calls 1 in getByUuid', async () => {
+            const spy = jest.spyOn(userRepository, 'getByUuid');
+            await userRepository.getByUuid(fakeUser.uuid);
             expect(spy.mock.calls.length).toBe(1);
         });
         
     });
 
     describe('Error Responses', () => {
-        it('getById return no user', async () => {
-            const results = await userRepository.getById(userResponse.id);
+        it('getByUuid return no user', async () => {
+            const results = await userRepository.getByUuid(userResponse.uuid);
             expect(results.email).not.toEqual('test');
         });
         
-        it('getById function not called', async () => {
-            const spy = jest.spyOn(userRepository, 'getById');
+        it('getByUuid function not called', async () => {
+            const spy = jest.spyOn(userRepository, 'getByUuid');
             expect(spy).not.toHaveBeenCalled();
         });
 
-        it('number of calls 0 in getById', async () => {
-            const spy = jest.spyOn(userRepository, 'getById');
+        it('number of calls 0 in getByUuid', async () => {
+            const spy = jest.spyOn(userRepository, 'getByUuid');
             expect(spy.mock.calls.length).toBe(0);
         });
     });
