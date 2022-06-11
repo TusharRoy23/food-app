@@ -76,7 +76,8 @@ export class AuthRepository implements IAuthRepository {
     private async getUserInfo(email: string): Promise<User> {
         try {
             const repo = await this.database.getRepository(User);
-            const user: User = await repo.findOne({ where: { email: email }, relations: ['user_info'] });
+            const user: User = await repo.findOne({ where: { email: email } });
+
             
             if (Object.keys(user).length) {
                 return user as User;
