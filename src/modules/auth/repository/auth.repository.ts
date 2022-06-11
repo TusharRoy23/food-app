@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../core/type.core';
 import { User } from '../../user/entity/user.entity';
+import { v4 as uuidv4 } from 'uuid';
 import { IAuthRepository } from '../interfaces/IAuth.repository';
 import { SignInCredentialsDto, SignUpCredentialsDto } from '../dto/index.dto';
 import { NotFoundException, InternalServerErrorException, BadRequestException } from '../../../shared/errors/all.exception';
@@ -34,6 +35,7 @@ export class AuthRepository implements IAuthRepository {
             const user = new User();
             const value = {
                 ...payload,
+                uuid: uuidv4(),
                 password: await user.doPasswordhashing(payload.password)
             };
             

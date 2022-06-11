@@ -1,7 +1,19 @@
 export enum UserRole {
+    NONE = 'none',
+    OWNER = 'owner',
+    EMPLOYEE = 'employee',
+    SUPERADMIN = 'superadmin'
+}
+
+export enum UserType {
     VISITOR = 'visitor',
     RESTAURANT_USER = 'restaurent-user',
-    SUPERADMIN = 'superadmin'
+    ADMIN = 'admin'
+}
+
+export enum CurrentStatus {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
 }
 
 export enum ProductStatus {

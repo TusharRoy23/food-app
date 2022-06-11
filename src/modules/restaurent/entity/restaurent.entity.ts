@@ -1,12 +1,14 @@
 import { validateOrReject } from 'class-validator';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Product } from '../../product/entity/product.entity';
-import { User } from '../../user/entity/user.entity';
+import { CurrentStatus } from '../../../shared/utils/enum';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Restaurent {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column({ nullable: false, type: 'varchar' })
+    uuid: string;
 
     @Column({ type: 'varchar' })
     @Index({ unique: true })
@@ -15,11 +17,24 @@ export class Restaurent {
     @Column({ type: 'text' })
     address: string;
 
-    @OneToMany(() => Product, (product) => product.restaurent)
-    products: Product[];
+    @Column({ type: 'int', nullable: false })
+    creator_id: number;
 
-    @OneToMany(() => User, (user) => user.restaurent)
-    users: User[];
+    @Column({ nullable: true, type: 'text'})
+    profile_img: string;
+
+    @Column({ nullable: false, type: 'time' })
+    opening_time: string;
+
+    @Column({ nullable: false, type: 'time' })
+    closing_time: string;
+
+    @Column({
+        type: 'enum',
+        enum: CurrentStatus,
+        default: CurrentStatus.INACTIVE
+    })
+    current_status: string;
 
     @BeforeInsert()
     @BeforeUpdate()
