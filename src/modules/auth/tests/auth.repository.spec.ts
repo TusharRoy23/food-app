@@ -21,7 +21,7 @@ describe('Auth Repository Test', () => {
     const fakeRepo = new FakeRepository();
 
     const fakeMethods = {
-        findOneBy: fakeRepo.findOneBy(userResponse),
+        findOne: fakeRepo.findOne(userResponse),
         create: fakeRepo.create(userResponse)
     };
 
