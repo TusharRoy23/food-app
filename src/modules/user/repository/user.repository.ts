@@ -1,9 +1,9 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../core/type.core";
-import { User } from "../entity/user.entity";
 import { IUserRepository } from "../interfaces/IUser.repository";
 import { NotFoundException, InternalServerErrorException } from "../../../shared/errors/all.exception";
 import { IDatabaseService } from "../../../core/interface/IDatabase.service";
+import { User } from "../entity/user.entity";
 
 @injectable()
 export class UserRepository implements IUserRepository {
