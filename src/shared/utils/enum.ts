@@ -14,6 +14,8 @@ export enum UserType {
 export enum CurrentStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
+    NOT_VERIFIED = 'not-verified',
+    VERIFIED = 'verified'
 }
 
 export enum ProductStatus {
