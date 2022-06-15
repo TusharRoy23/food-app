@@ -12,7 +12,7 @@ export const DtoValidationMiddleware = (type: any, skipMissingProperties = false
                     errors.forEach(err => {
                         errMsg[err.property] = [...(Object as any).values(err.constraints)]
                     });
-                    
+
                     res.status(400).json({
                         statusCode: 400,
                         success: false,

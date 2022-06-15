@@ -37,7 +37,7 @@ export class Restaurent {
     @Column({
         type: 'enum',
         enum: CurrentStatus,
-        default: CurrentStatus.INACTIVE
+        default: CurrentStatus.NOT_VERIFIED
     })
     current_status: string;
 
