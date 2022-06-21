@@ -27,10 +27,10 @@ export class User {
     @ManyToOne(
         type => Restaurent,
         restaurent => restaurent.user,
-        { eager: false }
+        { eager: true }
     )
     restaurent: Restaurent;
-    
+
     @OneToOne(
         type => UserInfo,
         { eager: true }
@@ -38,7 +38,7 @@ export class User {
     @JoinColumn()
     user_info: UserInfo
 
-    @Column({ 
+    @Column({
         type: 'enum',
         enum: UserType,
         default: UserType.VISITOR
@@ -52,10 +52,10 @@ export class User {
     })
     role: string;
 
-    @Column({ 
-        type: 'enum', 
-        enum: CurrentStatus, 
-        default: CurrentStatus.ACTIVE 
+    @Column({
+        type: 'enum',
+        enum: CurrentStatus,
+        default: CurrentStatus.ACTIVE
     })
     current_status: string;
 

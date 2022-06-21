@@ -18,12 +18,48 @@ export enum CurrentStatus {
     VERIFIED = 'verified'
 }
 
-export enum ProductStatus {
+export enum ItemStatus {
     ACTIVE = 'active',
     INACTIVE = 'inactive',
     OBSOLETE = 'obsolete',
     EXPERIMENTAL = 'experimental',
-    WAITING = 'waiting'
+    WAITING = 'waiting',
+    DELETED = 'deleted'
+}
+
+export enum ItemType {
+    FOOD = 'food',
+    DRINK = 'drink',
+    ALCOHOL = 'alcohol',
+    VICTUALS = 'Victuals'
+}
+
+export enum MealState {
+    HOT = 'hot',
+    COLD = 'cold',
+    NORMAL = 'normal'
+}
+
+export enum MealFlavor {
+    SWEET = 'sweet',
+    SPICY = 'spicy',
+    SALTY = 'salty',
+    SOUR = 'sour',
+    BITTER = 'bitter',
+    SAVORY = 'savory',
+}
+
+export enum MealType {
+    DAILYFOOD = 'daily food',
+    FASTFOOD = 'fast food',
+    SNACKS = 'snacks',
+    BURGERS = 'burgers',
+    MEAT = 'meat',
+    FISH = 'fish',
+    BEVERAGE = 'beverage',
+    DESSERT = 'dessert',
+    KEBAB = 'kebab',
+    ALCOHOL = 'alcohol'
 }
 
 export enum HttpStatusCode {
