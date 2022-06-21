@@ -1,11 +1,14 @@
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { validateOrReject } from 'class-validator';
 import { CurrentStatus } from '../../../shared/utils/enum';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
+import { Item } from '../../item/entity/item.entity';
+import { classToPlain, Exclude } from 'class-transformer';
 
 @Entity()
 export class Restaurent {
     @PrimaryGeneratedColumn()
+    @Exclude({ toPlainOnly: true })
     id: number;
 
     @Column({ type: 'varchar' })
@@ -25,7 +28,13 @@ export class Restaurent {
     )
     user: User[];
 
-    @Column({ nullable: true, type: 'text'})
+    @OneToMany(
+        type => Item,
+        item => item.restaurent,
+    )
+    item: Item[];
+
+    @Column({ nullable: true, type: 'text' })
     profile_img: string;
 
     @Column({ nullable: false, type: 'time' })
@@ -45,5 +54,9 @@ export class Restaurent {
     @BeforeUpdate()
     async validate() {
         await validateOrReject(this);
+    }
+
+    toJSON() {
+        return classToPlain(this);
     }
 }

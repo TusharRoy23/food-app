@@ -1,5 +1,5 @@
 import { IsEmail, IsString, MaxLength, MinLength, } from "class-validator";
-import { isTime } from "../../../shared/dto/time.validator";
+import { isTime } from "../../../shared/dto/custom.validator";
 
 export class RegisterDto {
     @IsEmail()
