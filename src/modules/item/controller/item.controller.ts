@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { controller, httpDelete, httpGet, httpPatch, httpPost, requestBody, requestParam } from "inversify-express-utils";
 import { User } from "../../user/entity/user.entity";
 import { TYPES } from "../../../core/type.core";
 import { CreateItemDto, UpdateItemDto } from "../dto/index.dto";
 import { IItemService } from "../interfaces/IItem.service";
 import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
 import { RoleMiddleware } from "../../../middlewares/role.middleware";
+import { controller, httpDelete, httpGet, httpPatch, httpPost, requestBody, requestParam } from "inversify-express-utils";
 
 @controller('/item', TYPES.AuthenticationMiddleware, RoleMiddleware('owner'))
 export class ItemController {
