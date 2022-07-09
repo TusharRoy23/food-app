@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { controller, httpPost, requestBody } from "inversify-express-utils";
+import { controller, httpGet, httpPost, requestBody } from "inversify-express-utils";
 import { TYPES } from "../../../core/type.core";
 import { RegisterDto } from "../dto/index.dto";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
@@ -19,6 +19,14 @@ export class RestaurentController {
         const msg = await this.restaurentService.register(body);
         return res.status(201).json({
             'message': msg
+        });
+    }
+
+    @httpGet('/list')
+    public async list(req: Request, res: Response) {
+        const list = await this.restaurentService.list();
+        return res.status(200).json({
+            results: list
         });
     }
 }
