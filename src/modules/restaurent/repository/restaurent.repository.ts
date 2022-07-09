@@ -16,6 +16,15 @@ export class RestaurentRepository implements IRestaurentRepository {
         @inject(TYPES.IDatabaseService) private readonly database: IDatabaseService,
     ) { }
 
+    async list(): Promise<Restaurent[]> {
+        try {
+            const restaurentRepo = await this.database.getRepository(Restaurent);
+            return await restaurentRepo.find();
+        } catch (error: any) {
+            throw new InternalServerErrorException(`${error.message}`);
+        }
+    }
+
     async register(registerDto: RegisterDto): Promise<string> {
         try {
             const userRepo = await this.database.getRepository(User);

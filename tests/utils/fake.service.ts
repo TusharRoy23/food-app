@@ -15,6 +15,7 @@ export const fakeUser: User = fakeUsers[0];
 export const accessToken: string = AcsTkn;
 export const refreshToken: string = RefrhTkn;
 export const fakeRestaurent: Restaurent = fakeRestaurents[0];
+export const fakeRestaurentList: Restaurent[] = fakeRestaurents;
 
 @injectable()
 export class FakeAuthService implements IAuthService {

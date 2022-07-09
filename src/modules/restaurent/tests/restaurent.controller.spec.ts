@@ -2,12 +2,16 @@ import { agent } from "../../../../tests/utils/supertest.utils";
 import { injectable } from "inversify";
 import { TYPES } from "../../../core/type.core";
 import container from "../../../core/container.core";
-import { fakeUser, fakeRestaurent } from "../../../../tests/utils/fake.service";
+import { fakeUser, fakeRestaurent, fakeRestaurentList } from "../../../../tests/utils/fake.service";
 import { RegisterDto } from "../dto/index.dto";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
+import { Restaurent } from "../entity/restaurent.entity";
 
 @injectable()
 class FakeRestaurentService implements IRestaurentService {
+    list(): Promise<Restaurent[]> {
+        return Promise.resolve(fakeRestaurentList);
+    }
     register(registerDto: RegisterDto): Promise<string> {
         return Promise.resolve('Restaurent Successfully Created!');
     }
@@ -31,11 +35,11 @@ describe('Restaurent Controller Test', () => {
     });
 
     describe('Create A Restaurent', () => {
-        it('Index', (done) => {
+        it('Response should be 201', (done) => {
             agent.post('/restaurent/register').send(payload).expect(201, done);
         });
 
-        it('Index', (done) => {
+        it('Register', (done) => {
             agent.post('/restaurent/register')
                 .send(payload)
                 .then(response => {
@@ -53,6 +57,25 @@ describe('Restaurent Controller Test', () => {
                 email: payload.email,
                 password: ''
             }).expect(400, done);
+        });
+    });
+
+    describe('Restaurent List', () => {
+        it('Response should be 200', (done) => {
+            agent.get('/restaurent/list').expect(200, done);
+        });
+
+        it('Get Restaurent List', (done) => {
+            agent.get('/restaurent/list')
+                .then(response => {
+                    const restaurents = response.body.results;
+                    expect(restaurents[0].name).toEqual(fakeRestaurentList[0].name);
+                    done();
+                })
+                .catch(error => {
+                    console.log('error: ', error);
+                    done();
+                })
         });
     });
 });
