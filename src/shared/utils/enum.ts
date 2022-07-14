@@ -62,6 +62,13 @@ export enum MealType {
     ALCOHOL = 'alcohol'
 }
 
+export enum CartStatus {
+    SAVED = 'saved',
+    APPROVED = 'approved',
+    DELETED = 'deleted',
+    REJECTED = 'rejected'
+}
+
 export enum HttpStatusCode {
     OK = 200,
     CREATED = 201,

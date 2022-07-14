@@ -5,6 +5,7 @@ import { hashPassword, isPasswordMatch } from '../../../shared/utils/password.ut
 import { CurrentStatus, UserRole, UserType } from '../../../shared/utils/enum';
 import { Restaurent } from '../../restaurent/entity/restaurent.entity';
 import { UserInfo } from './user-info.entity';
+import { Cart } from '../../cart/entity/cart.entity';
 
 @Entity()
 export class User {
@@ -30,6 +31,12 @@ export class User {
         { eager: true }
     )
     restaurent: Restaurent;
+
+    @ManyToOne(
+        type => Cart,
+        cart => cart.user
+    )
+    cart: Cart;
 
     @OneToOne(
         type => UserInfo,

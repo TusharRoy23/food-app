@@ -1,9 +1,10 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { classToPlain, Exclude } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { CurrentStatus } from '../../../shared/utils/enum';
 import { User } from '../../user/entity/user.entity';
 import { Item } from '../../item/entity/item.entity';
-import { classToPlain, Exclude } from 'class-transformer';
+import { Cart } from '../../cart/entity/cart.entity';
 
 @Entity()
 export class Restaurent {
@@ -33,6 +34,12 @@ export class Restaurent {
         item => item.restaurent,
     )
     item: Item[];
+
+    @OneToMany(
+        type => Cart,
+        cart => cart.restaurent
+    )
+    cart: Cart[];
 
     @Column({ nullable: true, type: 'text' })
     profile_img: string;
