@@ -34,7 +34,12 @@ export class ItemRepository implements IItemRepository {
     async retrive(restaurent: Restaurent): Promise<Item[]> {
         try {
             const itemRepo = await this.database.getRepository(Item);
-            return await itemRepo.find();
+            const item: Item[] = await itemRepo.createQueryBuilder("item")
+                .innerJoin("item.restaurent", "restaurent")
+                .where("restaurent.id = :id", { id: restaurent.id })
+                .getMany();
+
+            return item as Item[];
         } catch (error: any) {
             throw new InternalServerErrorException(`${error.message}`);
         }
@@ -92,9 +97,9 @@ export class ItemRepository implements IItemRepository {
             if (item && Object.keys(item)) {
                 return item as Item;
             }
-            throw new NotFoundException('Restaurent Not Found');
+            throw new NotFoundException('Item Not Found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException('Restaurent Not Found');
+            if (error instanceof NotFoundException) throw new NotFoundException('Item Not Found');
             throw new InternalServerErrorException(`${error.message}`);
         }
     }
