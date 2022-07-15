@@ -35,6 +35,12 @@ import { ItemRepository } from '../modules/item/repository/item.repository';
 import { ItemService } from '../modules/item/service/item.service';
 import { IItemService } from '../modules/item/interfaces/IItem.service';
 
+/* Cart Import */
+import { ICartRepository } from '../modules/cart/interfaces/ICart.repository';
+import { CartRepository } from '../modules/cart/repository/cart.repository';
+import { ICartService } from '../modules/cart/interfaces/ICart.service';
+import { CartService } from '../modules/cart/service/cart.service';
+
 /* Middleware Import */
 import { AuthenticationMiddleware } from '../middlewares/authentication.middleware';
 
@@ -61,6 +67,10 @@ container.bind<IRestaurentService>(TYPES.IRestaurentService).to(RestaurentServic
 /* Item Module bind */
 container.bind<IItemRepository>(TYPES.IItemRepository).to(ItemRepository);
 container.bind<IItemService>(TYPES.IItemService).to(ItemService);
+
+/* Cart Module bind */
+container.bind<ICartRepository>(TYPES.ICartRepository).to(CartRepository);
+container.bind<ICartService>(TYPES.ICartService).to(CartService);
 
 /* Middleware bind */
 container.bind<AuthenticationMiddleware>(TYPES.AuthenticationMiddleware).to(AuthenticationMiddleware);
