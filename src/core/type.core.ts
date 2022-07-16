@@ -7,4 +7,8 @@ export const TYPES = {
     IUserService: Symbol.for('IUserService'),
     IJsonWebTokenService: Symbol.for('IJsonWebTokenService'),
     AuthenticationMiddleware: Symbol.for('AuthenticationMiddleware'),
+    IRestaurentRepository: Symbol.for('IRestaurentRepository'),
+    IRestaurentService: Symbol.for('IRestaurentService'),
+    IItemRepository: Symbol.for('IItemRepository'),
+    IItemService: Symbol.for('IItemService')
 };

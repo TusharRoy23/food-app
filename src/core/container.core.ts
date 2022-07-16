@@ -23,6 +23,18 @@ import { IUserService } from '../modules/user/interfaces/IUser.service';
 import { UserService } from '../modules/user/service/user.service';
 import { IDatabaseService } from './interface/IDatabase.service';
 
+/* Restaurent Import */
+import { IRestaurentRepository } from '../modules/restaurent/interfaces/IRestaurent.repository';
+import { RestaurentRepository } from '../modules/restaurent/repository/restaurent.repository';
+import { IRestaurentService } from '../modules/restaurent/interfaces/IRestaurent.service';
+import { RestaurentService } from '../modules/restaurent/service/restaurent.service';
+
+/* Item Import */
+import { IItemRepository } from '../modules/item/interfaces/IItem.repository';
+import { ItemRepository } from '../modules/item/repository/item.repository';
+import { ItemService } from '../modules/item/service/item.service';
+import { IItemService } from '../modules/item/interfaces/IItem.service';
+
 /* Middleware Import */
 import { AuthenticationMiddleware } from '../middlewares/authentication.middleware';
 
@@ -41,6 +53,14 @@ container.bind<IAuthService>(TYPES.IAuthService).to(AuthService);
 /* User Module bind */
 container.bind<IUserRepository>(TYPES.IUserRepository).to(UserRepository);
 container.bind<IUserService>(TYPES.IUserService).to(UserService);
+
+/* Restaurent Module bind */
+container.bind<IRestaurentRepository>(TYPES.IRestaurentRepository).to(RestaurentRepository);
+container.bind<IRestaurentService>(TYPES.IRestaurentService).to(RestaurentService);
+
+/* Item Module bind */
+container.bind<IItemRepository>(TYPES.IItemRepository).to(ItemRepository);
+container.bind<IItemService>(TYPES.IItemService).to(ItemService);
 
 /* Middleware bind */
 container.bind<AuthenticationMiddleware>(TYPES.AuthenticationMiddleware).to(AuthenticationMiddleware);

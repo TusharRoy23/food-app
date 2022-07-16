@@ -5,6 +5,7 @@ import { hashPassword, isPasswordMatch } from '../../../shared/utils/password.ut
 import { CurrentStatus, UserRole, UserType } from '../../../shared/utils/enum';
 import { Restaurent } from '../../restaurent/entity/restaurent.entity';
 import { UserInfo } from './user-info.entity';
+import { Cart } from '../../cart/entity/cart.entity';
 
 @Entity()
 export class User {
@@ -27,10 +28,16 @@ export class User {
     @ManyToOne(
         type => Restaurent,
         restaurent => restaurent.user,
-        { eager: false }
+        { eager: true }
     )
     restaurent: Restaurent;
-    
+
+    @ManyToOne(
+        type => Cart,
+        cart => cart.user
+    )
+    cart: Cart;
+
     @OneToOne(
         type => UserInfo,
         { eager: true }
@@ -38,7 +45,7 @@ export class User {
     @JoinColumn()
     user_info: UserInfo
 
-    @Column({ 
+    @Column({
         type: 'enum',
         enum: UserType,
         default: UserType.VISITOR
@@ -52,10 +59,10 @@ export class User {
     })
     role: string;
 
-    @Column({ 
-        type: 'enum', 
-        enum: CurrentStatus, 
-        default: CurrentStatus.ACTIVE 
+    @Column({
+        type: 'enum',
+        enum: CurrentStatus,
+        default: CurrentStatus.ACTIVE
     })
     current_status: string;
 

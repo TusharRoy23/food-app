@@ -1,11 +1,15 @@
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { classToPlain, Exclude } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { CurrentStatus } from '../../../shared/utils/enum';
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
+import { Item } from '../../item/entity/item.entity';
+import { Cart } from '../../cart/entity/cart.entity';
 
 @Entity()
 export class Restaurent {
     @PrimaryGeneratedColumn()
+    @Exclude({ toPlainOnly: true })
     id: number;
 
     @Column({ type: 'varchar' })
@@ -25,7 +29,19 @@ export class Restaurent {
     )
     user: User[];
 
-    @Column({ nullable: true, type: 'text'})
+    @OneToMany(
+        type => Item,
+        item => item.restaurent,
+    )
+    item: Item[];
+
+    @OneToMany(
+        type => Cart,
+        cart => cart.restaurent
+    )
+    cart: Cart[];
+
+    @Column({ nullable: true, type: 'text' })
     profile_img: string;
 
     @Column({ nullable: false, type: 'time' })
@@ -37,7 +53,7 @@ export class Restaurent {
     @Column({
         type: 'enum',
         enum: CurrentStatus,
-        default: CurrentStatus.INACTIVE
+        default: CurrentStatus.NOT_VERIFIED
     })
     current_status: string;
 
@@ -45,5 +61,9 @@ export class Restaurent {
     @BeforeUpdate()
     async validate() {
         await validateOrReject(this);
+    }
+
+    toJSON() {
+        return classToPlain(this);
     }
 }
