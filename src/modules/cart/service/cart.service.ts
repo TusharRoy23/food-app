@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { CartReponse } from "../../../shared/utils/response.utils";
 import { TYPES } from "../../../core/type.core";
 import { CartDto } from "../dto/cart.dto";
 import { Cart } from "../entity/cart.entity";
@@ -11,7 +12,7 @@ export class CartService implements ICartService {
         @inject(TYPES.ICartRepository) private readonly cartRepo: ICartRepository
     ) { }
 
-    async create(cartDto: CartDto, userId: number, restaurentUuid: string): Promise<string> {
+    async create(cartDto: CartDto, userId: number, restaurentUuid: string): Promise<CartReponse> {
         return await this.cartRepo.create(cartDto, userId, restaurentUuid);
     }
     retrive(): Promise<Cart> {
