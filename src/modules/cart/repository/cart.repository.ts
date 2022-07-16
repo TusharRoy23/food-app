@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../../core/type.core";
+import moment from "moment";
 import { v4 as uuidv4 } from 'uuid';
+import { TYPES } from "../../../core/type.core";
 import { IDatabaseService } from "../../../core/interface/IDatabase.service";
 import { Cart } from "../entity/cart.entity";
 import { ICartRepository } from "../interfaces/ICart.repository";
@@ -9,6 +10,8 @@ import { InternalServerErrorException, NotFoundException } from "../../../shared
 import { User } from "../../user/entity/user.entity";
 import { Restaurent } from "../../restaurent/entity/restaurent.entity";
 import { Item } from "../../item/entity/item.entity";
+import { CartItem } from "../entity/cart-item.entity";
+import { CartItemResponse, CartReponse } from "../../../shared/utils/response.utils";
 
 @injectable()
 export class CartRepository implements ICartRepository {
@@ -16,21 +19,12 @@ export class CartRepository implements ICartRepository {
         @inject(TYPES.IDatabaseService) private readonly database: IDatabaseService
     ) { }
 
-    async create(cartDto: CartDto, userId: number, restaurentUuid: string): Promise<string> {
+    async create(cartDto: CartDto, userId: number, restaurentUuid: string): Promise<CartReponse> {
         try {
-            const cartRepo = await this.database.getRepository(Cart);
-            const userInfo = await this.userInfo(userId);
-            const restaurentInfo = await this.restaurentInfo(restaurentUuid);
-
-            const cart = new Cart();
-            cart.uuid = uuidv4();
-            cart.restaurent = restaurentInfo;
-            cart.user = userInfo;
-
-            const itemArr = [];
+            const itemArr: { item: Item, qty: number }[] = [];
             let cartAmount = 0;
 
-            Promise.all(
+            await Promise.all(
                 cartDto.cart_item.map(async (ele) => {
                     const item = await this.itemInfo(ele.uuid);
                     cartAmount += item.price * ele.qty;
@@ -41,9 +35,48 @@ export class CartRepository implements ICartRepository {
                 })
             );
 
+            const cartRepo = await this.database.getRepository(Cart);
+            const cartItemRepo = await this.database.getRepository(CartItem);
+            const userInfo = await this.userInfo(userId);
+            const restaurentInfo = await this.restaurentInfo(restaurentUuid);
 
+            const cart = new Cart();
+            cart.uuid = uuidv4();
+            cart.restaurent = restaurentInfo;
+            cart.user = userInfo;
+            cart.cart_amount = cartAmount;
+            cart.cart_date = moment().format('YYYY-MM-DD HH:mm:ss');
 
-            return 'checked';
+            const cart_info: Cart = await cartRepo.save(cart);
+
+            const result: CartReponse = {
+                uuid: cart_info.uuid,
+                cart_amount: cart_info.cart_amount,
+                cart_date: cart_info.cart_date,
+                cart_status: cart_info.cart_status,
+                cart_item: []
+            };
+
+            await Promise.all(
+                itemArr.map(async (ele) => {
+                    const value: CartItem = await cartItemRepo.save({
+                        uuid: uuidv4(),
+                        item: ele.item,
+                        qty: ele.qty,
+                        amount: ele.qty * ele.item.price,
+                        cart: cart_info
+                    });
+                    delete value.item.restaurent;
+
+                    result['cart_item'].push({
+                        uuid: value.uuid,
+                        qty: value.qty,
+                        amount: value.amount,
+                        item: value.item
+                    });
+                })
+            );
+            return result as CartReponse;
         } catch (error: any) {
             throw new InternalServerErrorException(`${error.message}`);
         }
@@ -52,9 +85,15 @@ export class CartRepository implements ICartRepository {
     retrive(): Promise<Cart> {
         throw new Error("Method not implemented.");
     }
-    update(): Promise<string> {
+
+    async update(): Promise<CartReponse> {
         throw new Error("Method not implemented.");
     }
+
+    async itemUpdate(): Promise<CartReponse> {
+        throw new Error("Method not implemented.");
+    }
+
     delete(): Promise<string> {
         throw new Error("Method not implemented.");
     }
@@ -91,8 +130,8 @@ export class CartRepository implements ICartRepository {
     private async itemInfo(uuid: string) {
         try {
             const repo = await this.database.getRepository(Item);
-            const item: Item = await repo.findOne({ where: { uuid: uuid } });
-            if (Object.keys(item).length) {
+            const item: Item = await repo.findOne({ where: { uuid: uuid, item_status: 'active' } });
+            if (item && Object.keys(item).length) {
                 return item as Item;
             }
             throw new NotFoundException('Item not found');
