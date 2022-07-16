@@ -15,7 +15,7 @@ export class AuthRepository implements IAuthRepository {
     constructor(
         @inject(TYPES.IDatabaseService) private readonly database: IDatabaseService,
         @inject(TYPES.IJsonWebTokenService) private readonly jsonWebTokenService: IJsonWebTokenService
-    ) {}
+    ) { }
 
     async signIn(payload: SignInCredentialsDto): Promise<UserResponse> {
         try {
@@ -63,7 +63,7 @@ export class AuthRepository implements IAuthRepository {
         try {
             const decode = await this.jsonWebTokenService.decode(payload.token, false);
             const user: User = await this.getUserInfo(decode.email);
-            
+
             return {
                 accessToken: await this.getAccessToken(user, true),
                 refreshToken: await this.getAccessToken(user, false)
@@ -78,8 +78,8 @@ export class AuthRepository implements IAuthRepository {
             const repo = await this.database.getRepository(User);
             const user: User = await repo.findOne({ where: { email: email } });
 
-            
-            if (Object.keys(user).length) {
+
+            if (user && Object.keys(user).length) {
                 return user as User;
             }
             throw new NotFoundException('User not found');
