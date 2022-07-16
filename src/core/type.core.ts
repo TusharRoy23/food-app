@@ -10,5 +10,7 @@ export const TYPES = {
     IRestaurentRepository: Symbol.for('IRestaurentRepository'),
     IRestaurentService: Symbol.for('IRestaurentService'),
     IItemRepository: Symbol.for('IItemRepository'),
-    IItemService: Symbol.for('IItemService')
+    IItemService: Symbol.for('IItemService'),
+    ICartRepository: Symbol.for('ICartRepository'),
+    ICartService: Symbol.for('ICartService'),
 };

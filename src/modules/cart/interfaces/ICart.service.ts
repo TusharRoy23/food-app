@@ -2,10 +2,9 @@ import { CartReponse } from "../../../shared/utils/response.utils";
 import { CartDto } from "../dto/cart.dto";
 import { Cart } from "../entity/cart.entity";
 
-export interface ICartRepository {
+export interface ICartService {
     create(cartDto: CartDto, userId: number, restaurentUuid: string): Promise<CartReponse>;
     retrive(): Promise<Cart>;
-    update(): Promise<CartReponse>;
-    itemUpdate(): Promise<CartReponse>;
+    update(): Promise<string>;
     delete(): Promise<string>;
 }
