@@ -35,12 +35,6 @@ export class Restaurent {
     )
     item: Item[];
 
-    @OneToMany(
-        type => Cart,
-        cart => cart.restaurent
-    )
-    cart: Cart[];
-
     @Column({ nullable: true, type: 'text' })
     profile_img: string;
 

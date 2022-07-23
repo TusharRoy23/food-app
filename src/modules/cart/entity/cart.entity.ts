@@ -16,14 +16,12 @@ export class Cart {
     uuid: string;
 
     @ManyToOne(
-        type => User,
-        user => user.cart
+        type => User
     )
     user: User;
 
     @ManyToOne(
-        type => Restaurent,
-        restaurent => restaurent.cart
+        type => Restaurent
     )
     restaurent: Restaurent;
 

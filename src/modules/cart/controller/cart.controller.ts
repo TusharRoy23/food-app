@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { controller, httpPost, requestBody, requestParam } from "inversify-express-utils";
+import { controller, httpDelete, httpGet, httpPatch, httpPost, requestBody, requestParam } from "inversify-express-utils";
 import { User } from "../../../modules/user/entity/user.entity";
 import { TYPES } from "../../../core/type.core";
 import { CartDto } from "../dto/cart.dto";
@@ -21,24 +21,45 @@ export class CartController {
         req: Request & { user: User },
         res: Response
     ) {
-        const result = await this.cartService.create(cartDto, req?.user?.id, restaurentUuid);
+        const result = await this.cartService.create(cartDto, req?.user?.uuid, restaurentUuid);
         return res.status(201).json({
             'result': result
         });
     }
 
-    @httpPost('/:uuid/restaurent/:restaurentUuid', DtoValidationMiddleware(CartItemDto))
+    @httpPost('/:uuid', DtoValidationMiddleware(CartItemDto))
     public async update(
         @requestBody() cartItemDto: CartItemDto,
         @requestParam('uuid') cartUuid: string,
-        @requestParam('restaurentUuid') restaurentUuid: string,
         req: Request & { user: User },
         res: Response
     ) {
-        console.log('cartUuid: ', cartUuid);
-        console.log('restaurentUuid: ', restaurentUuid);
+        const result = await this.cartService.update(cartItemDto, req?.user?.uuid, cartUuid);
         return res.status(201).json({
-            'result': ''
+            'result': result
+        });
+    }
+
+    @httpDelete('/:uuid/:itemUuid')
+    public async deleteCartItem(
+        @requestParam('uuid') cartUuid: string,
+        @requestParam('itemUuid') itemUuid: string,
+        req: Request & { user: User },
+        res: Response
+    ) {
+        await this.cartService.delete(itemUuid, cartUuid, req?.user.uuid);
+        return res.sendStatus(204);
+    }
+
+    @httpGet("/:uuid")
+    public async retriveCart(
+        @requestParam('uuid') cartUuid: string,
+        req: Request & { user: User },
+        res: Response
+    ) {
+        const result = await this.cartService.retrieve(cartUuid, req?.user.uuid);
+        return res.status(200).json({
+            'result': result
         });
     }
 }
