@@ -14,8 +14,8 @@ export class ItemService implements IItemRepository {
     create(payload: CreateItemDto, restaurent: Restaurent): Promise<string> {
         return this.itemRepo.create(payload, restaurent);
     }
-    retrive(restaurent: Restaurent): Promise<Item[]> {
-        return this.itemRepo.retrive(restaurent);
+    retrive(restaurentUuid: string): Promise<Item[]> {
+        return this.itemRepo.retrive(restaurentUuid);
     }
     update(payload: UpdateItemDto, uuid: string, restaurent: Restaurent): Promise<Item> {
         return this.itemRepo.update(payload, uuid, restaurent);

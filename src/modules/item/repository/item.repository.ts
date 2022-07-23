@@ -31,12 +31,12 @@ export class ItemRepository implements IItemRepository {
         }
     }
 
-    async retrive(restaurent: Restaurent): Promise<Item[]> {
+    async retrive(restaurentUuid: string): Promise<Item[]> {
         try {
             const itemRepo = await this.database.getRepository(Item);
             const item: Item[] = await itemRepo.createQueryBuilder("item")
                 .innerJoin("item.restaurent", "restaurent")
-                .where("restaurent.id = :id", { id: restaurent.id })
+                .where("restaurent.uuid = :uuid", { uuid: restaurentUuid })
                 .getMany();
 
             return item as Item[];
