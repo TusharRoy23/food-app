@@ -39,12 +39,12 @@ export class CreateItemDto {
     @Min(0)
     @IsNotEmpty()
     @isValidNumber('price')
-    discount_rate: number;
+    discount_rate?: number;
 
     @isValidDate('discount_start_date')
-    discount_start_date: string;
+    discount_start_date?: string;
 
     @isValidDate('discount_end_date')
     @isValidDateRange('discount_start_date')
-    discount_end_date: string;
+    discount_end_date?: string;
 }

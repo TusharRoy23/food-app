@@ -63,7 +63,7 @@ function demoItemData(object = {}) {
     return {
         uuid: faker.datatype.uuid(),
         id: +faker.datatype.number(),
-        name: faker.commerce.productName(),
+        name: faker.commerce.product(),
         icon: '',
         image: '',
         item_type: ItemType.FOOD,
@@ -71,9 +71,9 @@ function demoItemData(object = {}) {
         meal_state: MealState.HOT,
         meal_flavor: MealFlavor.SPICY,
         price: +faker.commerce.price(),
-        discount_start_date: "2022-05-18T11:18:48.000Z".toString(),
-        discount_end_date: "2022-05-20T11:19:48.000Z".toString(),
-        discount_rate: 0,
+        discount_start_date: String("2022-05-18T11:18:48.000Z"),
+        discount_end_date: String("2022-05-20T11:19:48.000Z"),
+        discount_rate: 0.0,
         item_status: ItemStatus.ACTIVE,
         ...object
     } as Item;
@@ -118,8 +118,24 @@ function generateCartData(object = {}) {
     return demoCartData({ ...object }) as CartReponse;
 }
 
+function itemPayload() {
+    return {
+        name: faker.commerce.product(),
+        item_type: ItemType.DRINK,
+        meal_type: MealType.BEVERAGE,
+        meal_state: MealState.COLD,
+        meal_flavor: MealFlavor.SWEET,
+        discount_start_date: "2022-05-18 11:18:48",
+        discount_end_date: "2022-05-20 11:19:48",
+        price: +faker.commerce.price(),
+        item_status: ItemStatus.ACTIVE,
+        discount_rate: 0
+    } as Item;
+}
+
 export const fakeUsers: Array<User> = generateUsersData(1);
 export const fakeUser: User = fakeUsers[0];
+export const fakeOwnerUser: User = generateUsersData(1, { role: UserRole.OWNER })[0];
 export const accessToken: string = faker.datatype.uuid() + faker.datatype.uuid();
 export const refreshToken: string = faker.datatype.uuid() + faker.datatype.uuid();
 export const fakeRestaurents: Array<Restaurent> = generateRestaurentsData();
@@ -127,3 +143,4 @@ export const fakeRestaurent: Restaurent = fakeRestaurents[0];
 export const fakeCart: CartReponse = generateCartData();
 export const fakeCartItem: Array<CartItemResponse> = generateCartItemData();
 export const fakeItemData: Array<Item> = generateItemData();
+export const fakeItemPayload: Item = itemPayload();
