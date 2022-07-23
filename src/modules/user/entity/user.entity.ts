@@ -32,12 +32,6 @@ export class User {
     )
     restaurent: Restaurent;
 
-    @ManyToOne(
-        type => Cart,
-        cart => cart.user
-    )
-    cart: Cart;
-
     @OneToOne(
         type => UserInfo,
         { eager: true }
