@@ -31,7 +31,6 @@ export const isValidNumber = (property: string, validationOptions?: ValidationOp
             options: validationOptions,
             validator: {
                 validate(value: number, args: ValidationArguments) {
-                    console.log('value: ', typeof value);
                     const regex = /^[0-9]*(\.[0-9]{0,2})?$/;
                     return typeof value === 'number' && regex.test(value.toString());
                 },
@@ -75,7 +74,6 @@ export const isValidDateRange = (property: string, validationOptions?: Validatio
                 validate(value: string, args: ValidationArguments) {
                     const [relatedPropertyName] = args.constraints;
                     const relatedValue = (args.object as any)[relatedPropertyName];
-
                     return moment(value, 'YYYY-MM-DD HH:mm:ss').isAfter(relatedValue);
                 },
                 defaultMessage(validationArguments?: ValidationArguments) {

@@ -3,12 +3,12 @@ import { agent } from "../../../../tests/utils/supertest.utils";
 import container from "../../../core/container.core";
 import { TYPES } from "../../../core/type.core";
 import { Restaurent } from "../../../modules/restaurent/entity/restaurent.entity";
-import { IJsonWebTokenService } from "../../../shared/interfaces/IJsonWebToken.service";
-import { fakeItem, fakeItemList, fakeItemObject, fakeRestaurent, fakerOwner } from "../../../../tests/utils/fake.service";
+import { fakeItem, fakeItemList, fakeRestaurent } from "../../../../tests/utils/fake.service";
 import { CreateItemDto } from "../dto/create-item.dto";
 import { UpdateItemDto } from "../dto/update-item.dto";
 import { Item } from "../entity/item.entity";
 import { IItemService } from "../interfaces/IItem.service";
+
 @injectable()
 export class FakeItemService implements IItemService {
     create(payload: CreateItemDto, restaurent: Restaurent): Promise<string> {
@@ -25,50 +25,19 @@ export class FakeItemService implements IItemService {
     }
 }
 
-const createItemDto: CreateItemDto = {
-    ...fakeItemObject
-};
-
-const itemPayload = {
-    ...createItemDto,
-    restaurent: fakeRestaurent
-};
-
-describe('Item Controller', () => {
-    let accessToken: string;
-    let jsonWebTokenService: IJsonWebTokenService;
-
+describe('Public Item Controller', () => {
     beforeAll(() => {
         container.rebind<IItemService>(TYPES.IItemService).to(FakeItemService);
-        jsonWebTokenService = container.get<IJsonWebTokenService>(TYPES.IJsonWebTokenService);
     });
 
     afterAll(() => {
         jest.resetAllMocks();
     });
 
-    beforeEach(async () => {
-        accessToken = await jsonWebTokenService.encode(fakerOwner, true);
-    });
-
-    describe('Create a Item', () => {
+    describe('Retrieve Restaurent Item', () => {
         it('Index', (done) => {
-            agent.post('/item')
-                .send(itemPayload)
-                .set('Authorization', `Bearer ${accessToken}`)
-                .expect(201, done)
-        });
-    });
-
-    describe('Update a Item', () => {
-        it('Index', (done) => {
-            agent.patch(`/item/${fakeItemObject.uuid}`)
-                .send({
-                    name: fakeItemObject.name,
-                    price: fakeItemObject.price,
-                })
-                .set('Authorization', `Bearer ${accessToken}`)
-                .expect(202, done)
+            agent.get(`/public/item/${fakeRestaurent.uuid}`)
+                .expect(200, done)
         });
     });
 });
