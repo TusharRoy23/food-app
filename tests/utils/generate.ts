@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { CartItemResponse, CartReponse } from 'src/shared/utils/response.utils';
+import { Cart } from 'src/modules/cart/entity/cart.entity';
+import { CartItemResponse, CartReponse, OrderItemResponse, OrderResponse } from 'src/shared/utils/response.utils';
 import { Item } from '../../src/modules/item/entity/item.entity';
 import { Restaurent } from '../../src/modules/restaurent/entity/restaurent.entity';
 import { UserInfo } from '../../src/modules/user/entity/user-info.entity';
@@ -84,7 +85,7 @@ function generateItemData(n = 1, object = {}) {
         length: n,
     }, (_, i) => {
         return demoItemData({ ...object }) as Item
-    })
+    }) as Item[]
 }
 
 function cartItemData(object = {}) {
@@ -133,6 +134,40 @@ function itemPayload() {
     } as Item;
 }
 
+function demoOrderItemData(object = {}) {
+    return {
+        uuid: faker.datatype.uuid(),
+        amount: +faker.commerce.price(),
+        qty: faker.datatype.number({ min: 1, max: 50 }),
+        item: generateItemData()[0],
+        deduction_rate: 0.0,
+        ...object
+    } as OrderItemResponse;
+}
+
+function generateOrderItemData(n = 1, object = {}) {
+    return Array.from({ length: n }, (_, i) => {
+        return demoOrderItemData({ ...object }) as OrderItemResponse
+    })
+}
+
+function demoOrderData(object = {}) {
+    return {
+        uuid: faker.datatype.uuid(),
+        order_amount: +faker.commerce.price(),
+        order_date: "2022-07-30 03:46:09",
+        serial_number: `F-${Date.now()}`,
+        rebate_amount: 0.0,
+        paid_by: 'cash on delivery',
+        order_status: 'pending',
+        ...object
+    } as OrderResponse;
+}
+
+function generateOrderData(object = {}) {
+    return demoOrderData({ ...object });
+}
+
 export const fakeUsers: Array<User> = generateUsersData(1);
 export const fakeUser: User = fakeUsers[0];
 export const fakeOwnerUser: User = generateUsersData(1, { role: UserRole.OWNER })[0];
@@ -144,3 +179,8 @@ export const fakeCart: CartReponse = generateCartData();
 export const fakeCartItem: Array<CartItemResponse> = generateCartItemData();
 export const fakeItemData: Array<Item> = generateItemData();
 export const fakeItemPayload: Item = itemPayload();
+export const fakeOrderItemData: Array<OrderItemResponse> = generateOrderItemData(2);
+export const fakeOrderData: OrderResponse = generateOrderData({
+    order_item: generateOrderItemData(2),
+    restaurent: generateRestaurentsData()[0],
+});

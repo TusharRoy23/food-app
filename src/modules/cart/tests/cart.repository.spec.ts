@@ -1,6 +1,5 @@
 import 'reflect-metadata';
-import { IDatabaseService } from "../../../core/interface/IDatabase.service"
-import { fakeCartData, fakeCartItemData, FakeRepository, fakeRestaurent, fakeUser } from "../../../../tests/utils/fake.service";
+import { cartSharedRepo, dbService, fakeCartData, fakeCartItemData, fakeRestaurent, fakeUser, itemSharedRepo, restaurentSharedRepo, userSharedRepo } from "../../../../tests/utils/fake.service";
 import { Cart } from "../entity/cart.entity";
 import { CartRepository } from "../repository/cart.repository";
 import { CartDto } from '../dto/cart.dto';
@@ -8,13 +7,7 @@ import { NotFoundException } from '../../../shared/errors/all.exception';
 
 
 describe('Cart Repository Test', () => {
-    const fakeRepo = new FakeRepository();
     let cartRepo: CartRepository;
-
-    const fakeMethods = {
-        save: fakeRepo.save({}),
-        update: fakeRepo.update({})
-    };
 
     const cartDto: CartDto = {
         cart_item: [
@@ -22,12 +15,8 @@ describe('Cart Repository Test', () => {
         ]
     }
 
-    const dbService: IDatabaseService = {
-        getRepository: jest.fn().mockImplementation(() => fakeMethods)
-    }
-
     beforeEach(() => {
-        cartRepo = new CartRepository(dbService);
+        cartRepo = new CartRepository(dbService, cartSharedRepo, restaurentSharedRepo, userSharedRepo, itemSharedRepo);
     });
 
     afterEach(() => {
@@ -72,12 +61,12 @@ describe('Cart Repository Test', () => {
 
     describe("Cart Error", () => {
         it('Create error', async () => {
-            const spy = jest.spyOn(cartRepo, 'create').mockImplementation(() => Promise.reject(new NotFoundException('Cart not found')));
+            jest.spyOn(cartRepo, 'create').mockImplementation(() => Promise.reject(new NotFoundException('Cart not found')));
             await expect(cartRepo.create).rejects.toThrow(new NotFoundException('Cart not found'));
         });
 
         it('Retrieve error', async () => {
-            const spy = jest.spyOn(cartRepo, 'retrieve').mockImplementation(() => Promise.reject(new NotFoundException('Cart not found')));
+            jest.spyOn(cartRepo, 'retrieve').mockImplementation(() => Promise.reject(new NotFoundException('Cart not found')));
             await expect(cartRepo.retrieve).rejects.toThrow(new NotFoundException('Cart not found'));
         });
     })

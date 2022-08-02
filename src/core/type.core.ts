@@ -13,4 +13,10 @@ export const TYPES = {
     IItemService: Symbol.for('IItemService'),
     ICartRepository: Symbol.for('ICartRepository'),
     ICartService: Symbol.for('ICartService'),
+    IOrderRepository: Symbol.for('IOrderRepository'),
+    IOrderService: Symbol.for('IOrderService'),
+    ICartSharedRepo: Symbol.for('ICartSharedRepo'),
+    IUserSharedRepo: Symbol.for('IUserSharedRepo'),
+    IRestaurentSharedRepo: Symbol.for('IRestaurentSharedRepo'),
+    IItemSharedRepo: Symbol.for('IItemSharedRepo'),
 };

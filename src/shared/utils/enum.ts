@@ -69,6 +69,19 @@ export enum CartStatus {
     REJECTED = 'rejected'
 }
 
+export enum OrderStatus {
+    PENDING = 'pending',
+    PAID = 'paid',
+    CANCELLED = 'cancelled',
+    IN_PROGRESS = 'in progress',
+}
+
+export enum PaidBy {
+    CASH_ON_DELIVERY = 'cash on delivery',
+    CARD = 'card',
+    PAID_VIA_MOBILE = 'paid via mobile'
+}
+
 export enum HttpStatusCode {
     OK = 200,
     CREATED = 201,
