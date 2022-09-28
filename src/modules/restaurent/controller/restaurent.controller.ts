@@ -1,32 +1,22 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { controller, httpGet, httpPost, requestBody } from "inversify-express-utils";
+import { controller, httpGet, requestParam } from "inversify-express-utils";
 import { TYPES } from "../../../core/type.core";
-import { RegisterDto } from "../dto/index.dto";
+import { RoleMiddleware } from "../../../middlewares/role.middleware";
+import { User } from "../../user/entity/user.entity";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
-import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
-
-@controller('/restaurent')
+@controller('/restaurent', TYPES.AuthenticationMiddleware, RoleMiddleware('owner'))
 export class RestaurentController {
     constructor(
         @inject(TYPES.IRestaurentService) private readonly restaurentService: IRestaurentService
     ) { }
 
-    @httpPost('/register', DtoValidationMiddleware(RegisterDto))
-    public async register(
-        @requestBody() body: RegisterDto, req: Request, res: Response
-    ) {
-        const msg = await this.restaurentService.register(body);
-        return res.status(201).json({
-            'message': msg
-        });
-    }
+    @httpGet('/order-list/:status')
+    public async getOrderList(
+        @requestParam('status') orderStatus: string,
+        req: Request & { user: User },
+        res: Response,
+    ) { // Get order list with all status
 
-    @httpGet('/list')
-    public async list(req: Request, res: Response) {
-        const list = await this.restaurentService.list();
-        return res.status(200).json({
-            results: list
-        });
     }
 }
