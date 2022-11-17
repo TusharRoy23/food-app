@@ -1,8 +1,8 @@
-import { CartItem } from "src/modules/cart/entity/cart-item.entity";
-import { Item } from "src/modules/item/entity/item.entity";
-import { Restaurent } from "src/modules/restaurent/entity/restaurent.entity";
+
+import { Item } from "../../modules/item/entity/item.entity";
+import { OrderDiscount } from "../../modules/order/entity/order-discount.entity";
+import { Restaurent } from "../../modules/restaurent/entity/restaurent.entity";
 import { User } from "../../modules/user/entity/user.entity";
-import { OrderStatus, PaidBy } from "./enum";
 
 export class UserResponse {
     user: User;
@@ -18,6 +18,8 @@ export class TokenResponse {
 export class CartReponse {
     uuid: string;
     cart_amount: number;
+    total_amount: number;
+    rebate_amount: number;
     cart_date: string;
     cart_status: string;
     cart_item: CartItemResponse[]
@@ -27,25 +29,29 @@ export class CartItemResponse {
     uuid: string;
     qty: number;
     amount: number;
-    item: Item;
+    total_amount: number;
+    item?: Item;
 }
 
 export class OrderResponse {
     uuid: string;
     order_amount: number;
-    restaurent: Restaurent;
+    total_amount: number;
+    restaurent?: Restaurent;
     serial_number: string;
     rebate_amount: number;
     order_date: string;
     order_status: string;
     paid_by: string;
-    order_item: OrderItemResponse[]
+    order_item: OrderItemResponse[];
+    order_discount?: OrderDiscount;
+    user?: User;
 }
 
 export class OrderItemResponse {
     uuid: string;
     qty: number;
     amount: number;
-    deduction_rate: number;
+    total_amount: number;
     item: Item;
 }

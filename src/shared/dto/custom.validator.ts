@@ -19,12 +19,12 @@ export const isTime = (property: string, validationOptions?: ValidationOptions) 
             }
         })
     }
-}
+};
 
 export const isValidNumber = (property: string, validationOptions?: ValidationOptions) => {
     return (object: Object, propertyName: string) => {
         registerDecorator({
-            name: 'isValidDate',
+            name: 'isValidNumber',
             target: object.constructor,
             propertyName: propertyName,
             constraints: [property],
@@ -40,9 +40,9 @@ export const isValidNumber = (property: string, validationOptions?: ValidationOp
             }
         })
     }
-}
+};
 
-export const isValidDate = (property: string, validationOptions?: ValidationOptions) => {
+export const isValidDate = (property: string, canBeEmpty: boolean = false, validationOptions?: ValidationOptions) => {
     return (object: Object, propertyName: string) => {
         registerDecorator({
             name: 'isValidDate',
@@ -52,6 +52,7 @@ export const isValidDate = (property: string, validationOptions?: ValidationOpti
             options: validationOptions,
             validator: {
                 validate(value: string, args: ValidationArguments) {
+                    if (canBeEmpty) return true;
                     return typeof value === 'string' && moment(value, 'YYYY-MM-DD HH:mm:ss', true).isValid();
                 },
                 defaultMessage(validationArguments?: ValidationArguments) {
@@ -60,9 +61,9 @@ export const isValidDate = (property: string, validationOptions?: ValidationOpti
             }
         })
     }
-}
+};
 
-export const isValidDateRange = (property: string, validationOptions?: ValidationOptions) => {
+export const isValidDateRange = (property: string, canBeEmpty: boolean = false, validationOptions?: ValidationOptions) => {
     return (object: Object, propertyName: string) => {
         registerDecorator({
             name: 'isValidDateRange',
@@ -72,6 +73,7 @@ export const isValidDateRange = (property: string, validationOptions?: Validatio
             options: validationOptions,
             validator: {
                 validate(value: string, args: ValidationArguments) {
+                    if (canBeEmpty) return true;
                     const [relatedPropertyName] = args.constraints;
                     const relatedValue = (args.object as any)[relatedPropertyName];
                     return moment(value, 'YYYY-MM-DD HH:mm:ss').isAfter(relatedValue);
@@ -82,7 +84,30 @@ export const isValidDateRange = (property: string, validationOptions?: Validatio
             }
         })
     }
-}
+};
+
+export const isValidNumberRange = (property: string, canBeEmpty: boolean = false, validationOptions?: ValidationOptions) => {
+    return (object: Object, propertyName: string) => {
+        registerDecorator({
+            name: 'isValidNumberRange',
+            target: object.constructor,
+            propertyName: propertyName,
+            constraints: [property],
+            options: validationOptions,
+            validator: {
+                validate(value: number, args: ValidationArguments) {
+                    if (canBeEmpty) return true;
+                    const [relatedPropertyName] = args.constraints;
+                    const relatedValue = (args.object as any)[relatedPropertyName];
+                    return +value < +relatedValue;
+                },
+                defaultMessage(validationArguments?: ValidationArguments) {
+                    return 'min value should not be greater than max value';
+                }
+            }
+        });
+    }
+};
 
 export const isValidEnum = (property: string, enumType: any, validationOptions?: ValidationOptions) => {
     return (object: Object, propertyName: string) => {
@@ -102,4 +127,4 @@ export const isValidEnum = (property: string, enumType: any, validationOptions?:
             }
         });
     }
-}
+};

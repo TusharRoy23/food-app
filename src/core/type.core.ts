@@ -19,4 +19,5 @@ export const TYPES = {
     IUserSharedRepo: Symbol.for('IUserSharedRepo'),
     IRestaurentSharedRepo: Symbol.for('IRestaurentSharedRepo'),
     IItemSharedRepo: Symbol.for('IItemSharedRepo'),
+    IOrderSharedRepository: Symbol.for('IOrderSharedRepository'),
 };

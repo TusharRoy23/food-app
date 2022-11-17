@@ -8,7 +8,7 @@ import { IDatabaseService } from "../../../core/interface/IDatabase.service";
 import { UserInfo } from '../../user/entity/user-info.entity';
 import { IJsonWebTokenService } from '../../../shared/interfaces/IJsonWebToken.service';
 import { TokenResponse, UserResponse } from '../../../shared/utils/response.utils';
-import { NotFoundException, InternalServerErrorException, BadRequestException, UnauthorizedException } from '../../../shared/errors/all.exception';
+import { NotFoundException, BadRequestException, UnauthorizedException, throwException } from '../../../shared/errors/all.exception';
 
 @injectable()
 export class AuthRepository implements IAuthRepository {
@@ -31,8 +31,7 @@ export class AuthRepository implements IAuthRepository {
             }
             throw new NotFoundException('User not found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException('User not found');
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -55,7 +54,7 @@ export class AuthRepository implements IAuthRepository {
             return 'User successfully created !';
         } catch (error: any) {
             if (error.code == 23505) throw new BadRequestException('Email Already Exists!');
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -84,8 +83,7 @@ export class AuthRepository implements IAuthRepository {
             }
             throw new NotFoundException('User not found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException('User not found');
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 

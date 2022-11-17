@@ -1,6 +1,5 @@
 import 'reflect-metadata';
-import { IDatabaseService } from "../../../core/interface/IDatabase.service";
-import { FakeRepository } from "../../../../tests/utils/fake.service";
+import { dbService, FakeRepository, orderSharedRepo, restaurentSharedRepo, userSharedRepo } from "../../../../tests/utils/fake.service";
 import { fakeRestaurent, fakeUser } from "../../../../tests/utils/fake.service";
 import { RestaurentRepository } from "../repository/restaurent.repository";
 import { Restaurent } from '../entity/restaurent.entity';
@@ -8,7 +7,6 @@ import { RegisterDto } from '../dto/register.dto';
 import { BadRequestException, InternalServerErrorException } from '../../../shared/errors/all.exception';
 
 describe('Restaurent Repository Tests', () => {
-    const fakeRepo = new FakeRepository();
     let restaurentRepo: RestaurentRepository;
 
     const payload: RegisterDto = {
@@ -20,17 +18,8 @@ describe('Restaurent Repository Tests', () => {
         closing_time: fakeRestaurent.closing_time
     };
 
-    const fakeMethods = {
-        save: fakeRepo.save(fakeRestaurent),
-        update: fakeRepo.update(fakeRestaurent)
-    };
-
-    const dbService: IDatabaseService = {
-        getRepository: jest.fn().mockImplementation(() => fakeMethods)
-    }
-
     beforeEach(() => {
-        restaurentRepo = new RestaurentRepository(dbService);
+        restaurentRepo = new RestaurentRepository(dbService, restaurentSharedRepo, orderSharedRepo, userSharedRepo);
     });
 
     afterEach(() => {

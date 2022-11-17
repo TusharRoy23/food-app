@@ -3,8 +3,9 @@ import { IDatabaseService } from "../../core/interface/IDatabase.service";
 import { TYPES } from "../../core/type.core";
 import { CartItem } from "../../modules/cart/entity/cart-item.entity";
 import { Cart } from "../../modules/cart/entity/cart.entity";
-import { InternalServerErrorException, NotFoundException } from "../errors/all.exception";
+import { NotFoundException, throwException } from "../errors/all.exception";
 import { ICartSharedRepo } from "../interfaces/ICartShared.repository";
+import { CartStatus, CurrentStatus } from "../utils/enum";
 
 @injectable()
 export class CartSharedRepo implements ICartSharedRepo {
@@ -21,8 +22,9 @@ export class CartSharedRepo implements ICartSharedRepo {
                 .innerJoinAndSelect("cart.user", "user")
                 .innerJoinAndSelect("cart.restaurent", "restaurent")
                 .where("cart.uuid = :uuid", { uuid: uuid })
-                .andWhere("cart.cart_status = :cartStatus", { cartStatus: 'saved' })
+                .andWhere("cart.cart_status = :cartStatus", { cartStatus: CartStatus.SAVED })
                 .andWhere("user.uuid = :userUuid", { userUuid: userUuid })
+                .andWhere("restaurent.current_status = :currentStatus", { currentStatus: CurrentStatus.ACTIVE })
                 .getOne();
 
             if (cart && Object.keys(cart).length) {
@@ -30,8 +32,7 @@ export class CartSharedRepo implements ICartSharedRepo {
             }
             throw new NotFoundException('Cart not found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException(`${error.message}`);
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -47,8 +48,7 @@ export class CartSharedRepo implements ICartSharedRepo {
 
             return cartItem as CartItem;
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException(`${error.message}`);
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -66,8 +66,7 @@ export class CartSharedRepo implements ICartSharedRepo {
             }
             throw new NotFoundException('Cart not found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException('Cart not found');
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 }

@@ -5,6 +5,8 @@ import { TYPES } from "../../../core/type.core";
 import { RegisterDto } from "../dto/index.dto";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
 import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
+import { RatingDto } from "../dto/index.dto";
+import { User } from "../../../modules/user/entity/index.entity";
 
 @controller('/public/restaurent')
 export class PublicRestaurentController {
@@ -24,9 +26,20 @@ export class PublicRestaurentController {
 
     @httpGet('/list')
     public async list(req: Request, res: Response) {
-        const list = await this.restaurentService.list();
+        const list = await this.restaurentService.getRestaurentList();
         return res.status(200).json({
-            results: list
+            'results': list
+        });
+    }
+
+    @httpPost('/rating', TYPES.AuthenticationMiddleware, DtoValidationMiddleware(RatingDto))
+    public async giveRating(
+        @requestBody() body: RatingDto,
+        req: Request & { user: User }, res: Response
+    ) {
+        const result = await this.restaurentService.giveRating(req.user, body);
+        return res.status(201).json({
+            'message': result
         });
     }
 }

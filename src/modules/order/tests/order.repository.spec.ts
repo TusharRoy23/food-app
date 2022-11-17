@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { cartSharedRepo, dbService, fakeCartData, fakeOrder, fakeUser } from "../../../../tests/utils/fake.service";
+import { cartSharedRepo, dbService, fakeCartData, fakeOrderResponse, fakeUser, restaurentSharedRepo, itemSharedRepo } from "../../../../tests/utils/fake.service";
 import { OrderDto } from "../dto/order.dto";
 import { Order } from "../entity/order.entity";
 import { OrderRepository } from "../repository/order.repository";
@@ -13,7 +13,7 @@ describe("Order repository", () => {
     };
 
     beforeEach(() => {
-        orderRepo = new OrderRepository(dbService, cartSharedRepo);
+        orderRepo = new OrderRepository(dbService, cartSharedRepo, restaurentSharedRepo, itemSharedRepo);
     });
 
     afterEach(() => {
@@ -30,15 +30,15 @@ describe("Order repository", () => {
 
     describe("Create a Order", () => {
         it("Should call submitOrder method", async () => {
-            const spy = jest.spyOn(orderRepo, 'submitOrder').mockImplementation(() => Promise.resolve(fakeOrder));
+            const spy = jest.spyOn(orderRepo, 'submitOrder').mockImplementation(() => Promise.resolve(fakeOrderResponse));
             await orderRepo.submitOrder(orderDto, fakeUser.uuid);
             expect(spy).toHaveBeenCalled();
         });
 
         it("Order amount should equal", async () => {
-            jest.spyOn(orderRepo, 'submitOrder').mockImplementation(() => Promise.resolve(fakeOrder));
+            jest.spyOn(orderRepo, 'submitOrder').mockImplementation(() => Promise.resolve(fakeOrderResponse));
             const submitOrder = await orderRepo.submitOrder(orderDto, fakeUser.uuid);
-            expect(submitOrder.order_amount).toEqual(fakeOrder.order_amount);
+            expect(submitOrder.order_amount).toEqual(fakeOrderResponse.order_amount);
         });
     });
 

@@ -11,6 +11,10 @@ export class OrderService implements IOrderService {
         @inject(TYPES.IOrderRepository) private readonly orderRepository: IOrderRepository
     ) { }
 
+    async getOrdersByUser(userUuid: string): Promise<OrderResponse[]> {
+        return await this.orderRepository.getOrdersByUser(userUuid);
+    }
+
     async submitOrder(orderDto: OrderDto, userUuid: string): Promise<OrderResponse> {
         return await this.orderRepository.submitOrder(orderDto, userUuid);
     }

@@ -3,17 +3,14 @@ import { IUserService } from "../../src/modules/user/interfaces/IUser.service";
 import { IAuthService } from "../../src/modules/auth/interfaces/IAuth.service";
 import { User } from "../../src/modules/user/entity/user.entity";
 import { RefreshTokenDto, SignInCredentialsDto, SignUpCredentialsDto } from "../../src/modules/auth/dto/index.dto";
-import { fakeUsers, fakeRestaurents, accessToken as AcsTkn, refreshToken as RefrhTkn, fakeCart, fakeCartItem, fakeItemData, fakeOwnerUser, fakeItemPayload, fakeOrderData, fakeOrderItemData } from "./generate";
+import { fakeUsers, fakeRestaurents, accessToken as AcsTkn, refreshToken as RefrhTkn, fakeCart, fakeCartItem, fakeItemData, fakeOwnerUser, fakeItemPayload, fakeOrderData, fakeOrderItemResponseData, fakeOrderDiscount, fakeOrderDataList, fakeOrderItem } from "./generate";
 import { CartItemResponse, CartReponse, OrderItemResponse, OrderResponse, TokenResponse, UserResponse } from "../../src/shared/utils/response.utils";
 import { Restaurent } from "../../src/modules/restaurent/entity/restaurent.entity";
 import { Item } from "../../src/modules/item/entity/item.entity";
-import { CartItem } from "../../src/modules/cart/entity/cart-item.entity";
-import { Cart } from "../../src/modules/cart/entity/cart.entity";
-import { ICartSharedRepo } from "../../src/shared/interfaces/ICartShared.repository";
+import { Cart, CartItem } from "../../src/modules/cart/entity/index.entity";
+import { ICartSharedRepo, IRestaurentSharedRepo, IUserSharedRepo, IItemSharedRepository, IOrderSharedRepository } from "../../src/shared/interfaces/IIndexShared.repository";
 import { IDatabaseService } from "../../src/core/interface/IDatabase.service";
-import { IRestaurentSharedRepo } from "../../src/shared/interfaces/IRestaurentShared.repository";
-import { IUserSharedRepo } from "../../src/shared/interfaces/IUserShared.repository";
-import { IItemSharedRepository } from "src/shared/interfaces/IItemShared.repository";
+import { OrderDiscount, OrderItem } from "../../src/modules/order/entity/index.entity";
 
 // export const users: Array<User> = generateUsersData(1);
 export const fakeUser: User = fakeUsers[0];
@@ -27,8 +24,11 @@ export const fakeCartItemData: CartItemResponse[] = fakeCartItem;
 export const fakeItem: Item = fakeItemData[0];
 export const fakeItemList: Item[] = fakeItemData;
 export const fakeItemObject: Item = fakeItemPayload;
-export const fakeOrder: OrderResponse = fakeOrderData;
-export const fakeOrderItem: OrderItemResponse[] = fakeOrderItemData;
+export const fakeOrderResponse: OrderResponse = fakeOrderData;
+export const fakeOrderResponseList: OrderResponse[] = fakeOrderDataList;
+export const fakeOrderItemResponse: OrderItemResponse[] = fakeOrderItemResponseData;
+export const fakeOrderDiscountList: OrderDiscount[] = fakeOrderDiscount;
+export const fakeOrderItemList: OrderItem[] = fakeOrderItem;
 
 export const cartItemData: CartItem = {
     id: 2,
@@ -36,8 +36,7 @@ export const cartItemData: CartItem = {
     item: fakeCartItemData[0].item,
     qty: fakeCartItemData[0].qty,
     amount: fakeCartItemData[0].amount,
-    validate: jest.fn(),
-    toJSON: jest.fn()
+    total_amount: 0
 }
 
 export const cartData: Cart = {
@@ -49,20 +48,17 @@ export const cartData: Cart = {
     cart_amount: fakeCartData.cart_amount,
     cart_date: fakeCartData.cart_date,
     cart_status: fakeCartData.cart_status,
+    order_discount: fakeOrderDiscountList[0],
+    total_amount: 0,
+    rebate_amount: 0,
     validate: jest.fn(),
     toJSON: jest.fn(),
 }
 
 export const cartSharedRepo: ICartSharedRepo = {
-    cartInfo: function (uuid: string, userUuid: string): Promise<Cart> {
-        return Promise.resolve(cartData);
-    },
-    cartItemInfo: function (cartUuid: string, itemUuid: string): Promise<CartItem> {
-        return Promise.resolve(cartItemData);
-    },
-    cartItemsInfo: function (cartId: number): Promise<CartItem[]> {
-        return Promise.resolve([cartItemData]);
-    }
+    cartInfo: jest.fn(() => Promise.resolve(cartData)),
+    cartItemInfo: jest.fn(() => Promise.resolve(cartItemData)),
+    cartItemsInfo: jest.fn(() => Promise.resolve([cartItemData])),
 };
 
 @injectable()
@@ -120,19 +116,18 @@ export const dbService: IDatabaseService = {
 }
 
 export const restaurentSharedRepo: IRestaurentSharedRepo = {
-    restaurentInfo: function (uuid: string): Promise<Restaurent> {
-        return Promise.resolve(fakeRestaurent);
-    }
+    restaurentInfo: jest.fn(() => Promise.resolve(fakeRestaurent)),
+    restaurentOrderDiscount: jest.fn(() => Promise.resolve(fakeOrderDiscountList[0]))
 };
 
 export const userSharedRepo: IUserSharedRepo = {
-    userInfo: function (userUuid: string): Promise<User> {
-        return Promise.resolve(fakeUser);
-    }
+    userInfo: jest.fn(() => Promise.resolve(fakeUser)),
 };
 
 export const itemSharedRepo: IItemSharedRepository = {
-    restaurentItemInfo: function (uuid: string, restaurentUuid: string): Promise<Item> {
-        return Promise.resolve(fakeItemData[0]);
-    }
+    restaurentItemInfo: jest.fn(() => Promise.resolve(fakeItemData[0])),
+}
+
+export const orderSharedRepo: IOrderSharedRepository = {
+    getOrderItemInfo: jest.fn(() => Promise.resolve(fakeOrderItemList)),
 }

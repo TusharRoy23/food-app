@@ -3,18 +3,15 @@ import moment from "moment";
 import { v4 as uuidv4 } from 'uuid';
 import { TYPES } from "../../../core/type.core";
 import { IDatabaseService } from "../../../core/interface/IDatabase.service";
-import { Cart } from "../entity/cart.entity";
 import { ICartRepository } from "../interfaces/ICart.repository";
-import { CartDto } from "../dto/cart.dto";
-import { InternalServerErrorException, NotFoundException } from "../../../shared/errors/all.exception";
+import { BadRequestException, throwException, NotFoundException } from "../../../shared/errors/all.exception";
 import { Item } from "../../item/entity/item.entity";
-import { CartItem } from "../entity/cart-item.entity";
-import { CartReponse } from "../../../shared/utils/response.utils";
+import { CartItem, Cart } from "../entity/index.entity";
+import { CartItemResponse, CartReponse } from "../../../shared/utils/response.utils";
 import { CartItemDto } from "../dto/cart-item.dto";
-import { ICartSharedRepo } from "../../../shared/interfaces/ICartShared.repository";
-import { IRestaurentSharedRepo } from "../../../shared/interfaces/IRestaurentShared.repository";
-import { IUserSharedRepo } from "../../../shared/interfaces/IUserShared.repository";
-import { IItemSharedRepository } from "../../../shared/interfaces/IItemShared.repository";
+import { IItemSharedRepository, IRestaurentSharedRepo, IUserSharedRepo, ICartSharedRepo } from "../../../shared/interfaces/IIndexShared.repository";
+import { Restaurent } from "../../../modules/restaurent/entity/restaurent.entity";
+import { CurrentStatus } from "../../../shared/utils/enum";
 
 @injectable()
 export class CartRepository implements ICartRepository {
@@ -26,33 +23,40 @@ export class CartRepository implements ICartRepository {
         @inject(TYPES.IItemSharedRepo) private readonly sharedItemRepo: IItemSharedRepository,
     ) { }
 
-    async create(cartDto: CartDto, userUuid: string, restaurentUuid: string): Promise<CartReponse> {
+    async create(cartItemDto: CartItemDto, userUuid: string, restaurentUuid: string): Promise<CartReponse> {
         try {
-            const itemArr: { item: Item, qty: number }[] = [];
-            let cartAmount = 0;
-
-            const uniqueItem: CartItemDto[] = [...new Map(cartDto.cart_item.map(item => [item.uuid, item])).values()];
-
-            await Promise.all(
-                uniqueItem.map(async (ele) => {
-                    const item = await this.sharedItemRepo.restaurentItemInfo(ele.uuid, restaurentUuid);
-                    cartAmount += item.price * ele.qty;
-                    itemArr.push({
-                        item: item,
-                        qty: ele.qty
-                    });
-                })
-            );
-
+            const restaurentInfo = await this.getRestaurentInfo(restaurentUuid);
+            const itemInfo: Item = await this.sharedItemRepo.restaurentItemInfo(cartItemDto.uuid, restaurentUuid);
             const cartRepo = await this.database.getRepository(Cart);
+
+            if (
+                (typeof itemInfo.max_order_qty === 'number' && itemInfo.max_order_qty < cartItemDto.qty) ||
+                (typeof itemInfo.min_order_qty === 'number' && itemInfo.min_order_qty > cartItemDto.qty)
+            ) {
+                throw new BadRequestException(`order qty should be between ${itemInfo.min_order_qty} To ${itemInfo.max_order_qty}`);
+            }
+
             const cartItemRepo = await this.database.getRepository(CartItem);
             const userInfo = await this.sharedUserRepo.userInfo(userUuid);
-            const restaurentInfo = await this.sharedResRepo.restaurentInfo(restaurentUuid);
 
             const cart = new Cart();
             cart.uuid = uuidv4();
             cart.restaurent = restaurentInfo;
             cart.user = userInfo;
+            cart.rebate_amount = 0.0;
+
+            let discountRate = itemInfo.discount_rate > 0 ? itemInfo.discount_rate / 100 : 1;
+            let cartAmount = cartItemDto.qty * itemInfo.price;
+            let itemTotalAmount = cartItemDto.qty * (itemInfo.price * discountRate);
+            cart.total_amount = itemTotalAmount;
+
+            const discountInfo = await this.sharedResRepo.restaurentOrderDiscount(restaurentUuid);
+            if (discountInfo.discount_rate > 0 && cart.total_amount <= discountInfo.max_amount && cart.total_amount >= discountInfo.min_amount) {
+                cart.rebate_amount = cart.total_amount * discountInfo.discount_rate;
+                cart.total_amount = cart.total_amount - cart.rebate_amount;
+                cart.order_discount = discountInfo;
+            }
+
             cart.cart_amount = cartAmount;
             cart.cart_date = moment().format('YYYY-MM-DD HH:mm:ss');
 
@@ -61,33 +65,32 @@ export class CartRepository implements ICartRepository {
             const result: CartReponse = {
                 uuid: cart_info.uuid,
                 cart_amount: cart_info.cart_amount,
+                total_amount: cart_info.total_amount,
+                rebate_amount: cart_info.rebate_amount,
                 cart_date: cart_info.cart_date,
                 cart_status: cart_info.cart_status,
                 cart_item: []
             };
 
-            await Promise.all(
-                itemArr.map(async (ele) => {
-                    const value: CartItem = await cartItemRepo.save({
-                        uuid: uuidv4(),
-                        item: ele.item,
-                        qty: ele.qty,
-                        amount: ele.qty * ele.item.price,
-                        cart: cart_info
-                    });
-                    delete value.item.restaurent;
+            const cartItem: CartItem = await cartItemRepo.save({
+                uuid: uuidv4(),
+                item: itemInfo,
+                qty: cartItemDto.qty,
+                amount: cartAmount,
+                total_amount: itemTotalAmount,
+                cart: cart_info
+            });
+            result['cart_item'].push({
+                uuid: cartItem.uuid,
+                qty: cartItem.qty,
+                amount: cartItem.amount,
+                total_amount: cartItem.total_amount,
+                item: cartItem.item,
+            });
 
-                    result['cart_item'].push({
-                        uuid: value.uuid,
-                        qty: value.qty,
-                        amount: value.amount,
-                        item: value.item
-                    });
-                })
-            );
             return result as CartReponse;
         } catch (error: any) {
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -99,6 +102,8 @@ export class CartRepository implements ICartRepository {
             const result: CartReponse = {
                 uuid: cartInfo.uuid,
                 cart_amount: cartInfo.cart_amount,
+                total_amount: cartInfo.total_amount,
+                rebate_amount: cartInfo.rebate_amount,
                 cart_date: cartInfo.cart_date,
                 cart_status: cartInfo.cart_status,
                 cart_item: []
@@ -108,6 +113,7 @@ export class CartRepository implements ICartRepository {
                 result.cart_item.push({
                     uuid: item.uuid,
                     amount: item.amount,
+                    total_amount: item.total_amount,
                     qty: item.qty,
                     item: item.item
                 });
@@ -115,8 +121,7 @@ export class CartRepository implements ICartRepository {
 
             return result as CartReponse;
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException(`${error.message}`);
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -124,79 +129,126 @@ export class CartRepository implements ICartRepository {
         try {
             const cartInfo: Cart = await this.sharedCartRepo.cartInfo(cartUuid, userUuid);
             const itemInfo: Item = await this.sharedItemRepo.restaurentItemInfo(cartItemDto.uuid, cartInfo.restaurent.uuid);
+            if (
+                (typeof itemInfo.max_order_qty === 'number' && itemInfo.max_order_qty < cartItemDto.qty) ||
+                (typeof itemInfo.min_order_qty === 'number' && itemInfo.min_order_qty > cartItemDto.qty)
+            ) {
+                throw new BadRequestException(`order qty should be between ${itemInfo.min_order_qty} To ${itemInfo.max_order_qty}`);
+            }
             const cartItemRepo = await this.database.getRepository(CartItem);
-            let cartItem: CartItem;
             const cartItemInfo = await this.sharedCartRepo.cartItemInfo(cartUuid, cartItemDto.uuid);
+            const discountRate = itemInfo.discount_rate > 0 ? itemInfo.discount_rate / 100 : 1;
+            const itemTotalAmount = cartItemDto.qty * (itemInfo.price * discountRate);
+            const itemAmount = cartItemDto.qty * itemInfo.price;
 
             if (cartItemInfo && Object.keys(cartItemInfo).length) {
-                const value = await cartItemRepo.createQueryBuilder().update(CartItem).set({
+                await cartItemRepo.createQueryBuilder().update(CartItem).set({
                     qty: cartItemDto.qty,
-                    amount: cartItemDto.qty * itemInfo.price,
+                    amount: itemAmount,
+                    total_amount: itemTotalAmount
                 })
                     .where("id = :id", { id: cartItemInfo.id })
                     .output(['amount']).execute();
-
-                cartItem = value.raw[0] as CartItem;
             } else {
-                cartItem = await cartItemRepo.save({
+                await cartItemRepo.save({
                     uuid: uuidv4(),
                     item: itemInfo,
                     qty: cartItemDto.qty,
-                    amount: cartItemDto.qty * itemInfo.price,
+                    amount: itemAmount,
+                    total_amount: itemTotalAmount,
                     cart: cartInfo
                 });
             }
 
-
-            const cartRepo = await this.database.getRepository(Cart);
-            const updatedCart = await cartRepo.createQueryBuilder().update(Cart)
-                .set({
-                    cart_amount: cartInfo.cart_amount + cartItem.amount
-                })
-                .where("id = :id", { id: cartInfo.id })
-                .output([
-                    'uuid', 'cart_amount'
-                ])
-                .execute();
-
-            const result: CartReponse = {
-                uuid: cartInfo.uuid,
-                cart_amount: updatedCart.raw[0].cart_amount,
-                cart_date: cartInfo.cart_date,
-                cart_status: cartInfo.cart_status,
-                cart_item: []
-            };
-
-            const cartItemsInfo = await this.sharedCartRepo.cartItemsInfo(cartInfo.id);
-            cartItemsInfo.forEach(ele => {
-                result['cart_item'].push({
-                    uuid: ele.uuid,
-                    qty: ele.qty,
-                    amount: ele.amount,
-                    item: ele.item
-                });
-            });
-
-            return result as CartReponse;
+            return this.getCartResponse(cartInfo);
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException(`${error.message}`);
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
-    async delete(itemUuid: string, cartUuid: string, userUuid: string): Promise<boolean> {
+    async delete(itemUuid: string, cartUuid: string, userUuid: string): Promise<CartReponse> {
         try {
-            await this.sharedCartRepo.cartInfo(cartUuid, userUuid);
+            const cartInfo: Cart = await this.sharedCartRepo.cartInfo(cartUuid, userUuid);
             const cartItemInfo = await this.sharedCartRepo.cartItemInfo(cartUuid, itemUuid);
             if (cartItemInfo && Object.keys(cartItemInfo).length) {
                 const repo = await this.database.getRepository(CartItem);
                 repo.createQueryBuilder("cart_item").delete().where("id = :id", { id: cartItemInfo.id }).execute();
-                return Promise.resolve(true);
+                return await this.getCartResponse(cartInfo);
             }
             throw new NotFoundException('Item not found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException(`${error.message}`);
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
+    }
+
+    private async getCartResponse(cartInfo: Cart): Promise<CartReponse> {
+        try {
+            const cartItemsInfo = await this.sharedCartRepo.cartItemsInfo(cartInfo.id);
+            const cartItemResponse: CartItemResponse[] = [];
+            let cartAmount = 0;
+            let totalAmount = 0;
+
+            cartItemsInfo.forEach(ele => {
+                cartAmount += ele.amount;
+                totalAmount += ele.total_amount;
+                cartItemResponse.push({
+                    uuid: ele.uuid,
+                    qty: ele.qty,
+                    amount: ele.amount,
+                    total_amount: ele.total_amount,
+                    item: ele.item
+                });
+            });
+            let rebate_amount = 0;
+
+            const discountInfo = await this.sharedResRepo.restaurentOrderDiscount(cartInfo.restaurent.uuid);
+            if (discountInfo.discount_rate > 0 && totalAmount <= discountInfo.max_amount && totalAmount >= discountInfo.min_amount) {
+                rebate_amount = totalAmount * discountInfo.discount_rate;
+                totalAmount = totalAmount - rebate_amount;
+            }
+
+            const payload: any = {
+                cart_amount: cartAmount,
+                rebate_amount: rebate_amount,
+                total_amount: totalAmount,
+                order_discount: null,
+            };
+
+            if (rebate_amount > 0) {
+                payload['order_discount'] = discountInfo;
+            }
+
+            const cartRepo = await this.database.getRepository(Cart);
+            const updatedCart = await cartRepo.createQueryBuilder().update(Cart)
+                .set(payload)
+                .where("id = :id", { id: cartInfo.id })
+                .output([
+                    'uuid', 'cart_amount', 'total_amount', 'rebate_amount',
+                ])
+                .execute();
+
+            const cart = updatedCart.raw[0] as Cart;
+
+            const result: CartReponse = {
+                uuid: cartInfo.uuid,
+                cart_amount: cart.cart_amount,
+                total_amount: cart.total_amount,
+                rebate_amount: cart.rebate_amount,
+                cart_date: cartInfo.cart_date,
+                cart_status: cartInfo.cart_status,
+                cart_item: cartItemResponse
+            };
+            return result as CartReponse;
+        } catch (error) {
+            return throwException(error);
+        }
+    }
+
+    private async getRestaurentInfo(uuid: string): Promise<Restaurent> {
+        const restaurent: Restaurent = await this.sharedResRepo.restaurentInfo(uuid);
+        if (Object.keys(restaurent.id) && restaurent.current_status == CurrentStatus.ACTIVE) {
+            return restaurent;
+        }
+        throw new BadRequestException('Not allowed');
     }
 }

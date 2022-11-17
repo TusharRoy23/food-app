@@ -4,14 +4,17 @@ import container from "../../../core/container.core";
 import { TYPES } from "../../../core/type.core";
 import { IJsonWebTokenService } from "../../../shared/interfaces/IJsonWebToken.service";
 import { OrderResponse } from "../../../shared/utils/response.utils";
-import { fakeCartData, fakeOrder, fakeUser } from "../../../../tests/utils/fake.service";
+import { fakeCartData, fakeOrderResponse, fakeOrderResponseList, fakeUser } from "../../../../tests/utils/fake.service";
 import { OrderDto } from "../dto/order.dto";
 import { IOrderService } from "../interfaces/IOrder.service";
 
 @injectable()
 export class FakeOrderService implements IOrderService {
+    getOrdersByUser(userUuid: string): Promise<OrderResponse[]> {
+        return Promise.resolve(fakeOrderResponseList);
+    }
     submitOrder(orderDto: OrderDto, userUuid: string): Promise<OrderResponse> {
-        return Promise.resolve(fakeOrder);
+        return Promise.resolve(fakeOrderResponse);
     }
 }
 
@@ -51,7 +54,7 @@ describe("Order Controller Tests", () => {
                 .send(orderDto)
                 .set('Authorization', `Bearer ${accessToken}`)
                 .then((response) => {
-                    expect(response.body.results.uuid).toStrictEqual(fakeOrder.uuid);
+                    expect(response.body.results.uuid).toStrictEqual(fakeOrderResponse.uuid);
                     done();
                 })
                 .catch((error) => {

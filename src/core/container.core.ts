@@ -8,8 +8,8 @@ import { Logger } from '../shared/services/logger.service';
 import { JsonWebTokenService } from '../shared/services/jsonWebToken.service';
 
 /* Shared Repository Import */
-import { ICartSharedRepo, IUserSharedRepo, IRestaurentSharedRepo, IJsonWebTokenService } from '../shared/interfaces/IIndexShared.interface';
-import { CartSharedRepo, UserSharedRepo, RestaurentSharedRepo } from '../shared/repositories/indexShared.repository';
+import { ICartSharedRepo, IUserSharedRepo, IRestaurentSharedRepo, IJsonWebTokenService, IItemSharedRepository, IOrderSharedRepository } from '../shared/interfaces/IIndexShared.repository';
+import { CartSharedRepo, UserSharedRepo, RestaurentSharedRepo, ItemSharedRepository, OrderSharedRepository } from '../shared/repositories/indexShared.repository';
 
 /* All Controller Import */
 import '../modules/index.controller';
@@ -48,6 +48,8 @@ container.bind<IJsonWebTokenService>(TYPES.IJsonWebTokenService).to(JsonWebToken
 container.bind<ICartSharedRepo>(TYPES.ICartSharedRepo).to(CartSharedRepo);
 container.bind<IUserSharedRepo>(TYPES.IUserSharedRepo).to(UserSharedRepo);
 container.bind<IRestaurentSharedRepo>(TYPES.IRestaurentSharedRepo).to(RestaurentSharedRepo);
+container.bind<IItemSharedRepository>(TYPES.IItemSharedRepo).to(ItemSharedRepository);
+container.bind<IOrderSharedRepository>(TYPES.IOrderSharedRepository).to(OrderSharedRepository);
 
 /* Auth Module bind */
 container.bind<IAuthRepository>(TYPES.IAuthRepository).to(AuthRepository);

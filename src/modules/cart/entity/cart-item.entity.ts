@@ -16,7 +16,7 @@ export class CartItem {
     @ManyToOne(
         type => Item,
     )
-    item: Item;
+    item?: Item;
 
     @ManyToOne(
         type => Cart,
@@ -24,19 +24,22 @@ export class CartItem {
     )
     cart?: Cart;
 
-    @Column({ nullable: false, type: 'float' })
+    @Column({ nullable: false, type: 'float', default: 0.0 })
     qty: number;
 
-    @Column({ nullable: false, type: 'float' })
+    @Column({ nullable: false, type: 'float', default: 0.0 })
     amount: number;
 
-    @BeforeInsert()
-    @BeforeUpdate()
-    async validate() {
-        await validateOrReject(this);
-    }
+    @Column({ nullable: false, type: 'float', default: 0.0 })
+    total_amount: number;
 
-    toJSON() {
-        return classToPlain(this);
-    }
+    // @BeforeInsert()
+    // @BeforeUpdate()
+    // async validate() {
+    //     await validateOrReject(this);
+    // }
+
+    // toJSON() {
+    //     return classToPlain(this);
+    // }
 }

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { OrderResponse } from "../../../shared/utils/response.utils";
-import { fakeCartData, fakeOrder, fakeUser } from '../../../../tests/utils/fake.service';
+import { fakeCartData, fakeOrderResponse, fakeUser, fakeOrderResponseList } from '../../../../tests/utils/fake.service';
 import { OrderDto } from "../dto/order.dto";
 import { IOrderRepository } from "../interfaces/IOrder.repository";
 import { OrderService } from "../service/order.service";
@@ -11,7 +11,10 @@ describe("Order Service Test", () => {
 
     const mockOrderRepo: IOrderRepository = {
         submitOrder: function (orderDto: OrderDto, userUuid: string): Promise<OrderResponse> {
-            return Promise.resolve(fakeOrder);
+            return Promise.resolve(fakeOrderResponse);
+        },
+        getOrdersByUser: function (userUuid: string): Promise<OrderResponse[]> {
+            return Promise.resolve(fakeOrderResponseList);
         }
     };
 
@@ -44,7 +47,7 @@ describe("Order Service Test", () => {
     describe("Create a order", () => {
         it("Create Order", async () => {
             const response = await orderService.submitOrder(orderDto, fakeUser.uuid);
-            expect(response.uuid).toEqual(fakeOrder.uuid);
+            expect(response.uuid).toEqual(fakeOrderResponse.uuid);
         })
     });
 

@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { classToPlain, Exclude } from "class-transformer";
 import { Order } from "./order.entity";
 import { Item } from "../../../modules/item/entity/item.entity";
-import { classToPlain, Exclude } from "class-transformer";
 
 @Entity()
 export class OrderItem {
@@ -29,8 +29,8 @@ export class OrderItem {
     @Column({ nullable: false, type: 'float' })
     amount: number;
 
-    @Column({ nullable: true, type: 'float', default: 0.0 })
-    deduction_rate: number;
+    @Column({ nullable: false, type: 'float' })
+    total_amount: number;
 
     toJSON() {
         return classToPlain(this);

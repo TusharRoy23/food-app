@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { controller, httpPost, requestBody } from "inversify-express-utils";
+import { controller, httpGet, httpPost, requestBody } from "inversify-express-utils";
 import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
 import { User } from "../../../modules/user/entity/user.entity";
 import { TYPES } from "../../../core/type.core";
@@ -21,6 +21,17 @@ export class OrderController {
     ) {
         const result = await this.orderService.submitOrder(orderDto, req.user.uuid);
         return res.status(201).json({
+            'results': result
+        });
+    }
+
+    @httpGet('/')
+    public async getOrdersByUser(
+        req: Request & { user: User },
+        res: Response
+    ) {
+        const result = await this.orderService.getOrdersByUser(req.user.uuid);
+        return res.status(200).json({
             'results': result
         });
     }
