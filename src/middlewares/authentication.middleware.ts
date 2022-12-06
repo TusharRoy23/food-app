@@ -38,8 +38,8 @@ export class AuthenticationMiddleware extends BaseMiddleware {
             }
             next();
         } catch (error) {
-            return res.status(403).json({
-                statusCode: 403,
+            return res.status(401).json({
+                statusCode: 401,
                 success: false,
                 message: 'Token Expired',
                 error: null

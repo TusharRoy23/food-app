@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
-
 import { InversifyExpressServer } from 'inversify-express-utils';
+
 import container from './core/container.core';
 import { HttpStatusCode } from './shared/utils/enum';
 import {
@@ -13,6 +13,8 @@ import {
     MethodNotAllowedException,
     RequestTimeoutException
 } from './shared/errors/all.exception';
+import apolloServer from './apollo.server';
+
 
 let router = express.Router({
     caseSensitive: true,
@@ -21,9 +23,12 @@ let router = express.Router({
 });
 
 export const server = new InversifyExpressServer(container, router);
-server.setConfig(app => {
+server.setConfig(async app => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
+    await apolloServer.start();
+    apolloServer.applyMiddleware({ app, path: '/graphql' });
+
 });
 
 const errorResponse = (req: Request, res: Response, message: string, statusCode: any, error?: any) => {

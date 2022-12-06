@@ -51,7 +51,7 @@ export class CartRepository implements ICartRepository {
             cart.total_amount = itemTotalAmount;
 
             const discountInfo = await this.sharedResRepo.restaurentOrderDiscount(restaurentUuid);
-            if (discountInfo.discount_rate > 0 && cart.total_amount <= discountInfo.max_amount && cart.total_amount >= discountInfo.min_amount) {
+            if (discountInfo && discountInfo.discount_rate > 0 && cart.total_amount <= discountInfo.max_amount && cart.total_amount >= discountInfo.min_amount) {
                 cart.rebate_amount = cart.total_amount * discountInfo.discount_rate;
                 cart.total_amount = cart.total_amount - cart.rebate_amount;
                 cart.order_discount = discountInfo;
@@ -129,6 +129,7 @@ export class CartRepository implements ICartRepository {
         try {
             const cartInfo: Cart = await this.sharedCartRepo.cartInfo(cartUuid, userUuid);
             const itemInfo: Item = await this.sharedItemRepo.restaurentItemInfo(cartItemDto.uuid, cartInfo.restaurent.uuid);
+
             if (
                 (typeof itemInfo.max_order_qty === 'number' && itemInfo.max_order_qty < cartItemDto.qty) ||
                 (typeof itemInfo.min_order_qty === 'number' && itemInfo.min_order_qty > cartItemDto.qty)
@@ -170,9 +171,9 @@ export class CartRepository implements ICartRepository {
         try {
             const cartInfo: Cart = await this.sharedCartRepo.cartInfo(cartUuid, userUuid);
             const cartItemInfo = await this.sharedCartRepo.cartItemInfo(cartUuid, itemUuid);
-            if (cartItemInfo && Object.keys(cartItemInfo).length) {
+            if (cartInfo && Object.keys(cartInfo) && cartItemInfo && Object.keys(cartItemInfo).length) {
                 const repo = await this.database.getRepository(CartItem);
-                repo.createQueryBuilder("cart_item").delete().where("id = :id", { id: cartItemInfo.id }).execute();
+                await repo.createQueryBuilder("cart_item").delete().where("id = :id", { id: cartItemInfo.id }).execute();
                 return await this.getCartResponse(cartInfo);
             }
             throw new NotFoundException('Item not found');
@@ -187,22 +188,24 @@ export class CartRepository implements ICartRepository {
             const cartItemResponse: CartItemResponse[] = [];
             let cartAmount = 0;
             let totalAmount = 0;
-
-            cartItemsInfo.forEach(ele => {
-                cartAmount += ele.amount;
-                totalAmount += ele.total_amount;
-                cartItemResponse.push({
-                    uuid: ele.uuid,
-                    qty: ele.qty,
-                    amount: ele.amount,
-                    total_amount: ele.total_amount,
-                    item: ele.item
+            if (cartItemsInfo) {
+                cartItemsInfo.forEach(ele => {
+                    cartAmount += ele.amount;
+                    totalAmount += ele.total_amount;
+                    cartItemResponse.push({
+                        uuid: ele.uuid,
+                        qty: ele.qty,
+                        amount: ele.amount,
+                        total_amount: ele.total_amount,
+                        item: ele.item
+                    });
                 });
-            });
+            }
+
             let rebate_amount = 0;
 
             const discountInfo = await this.sharedResRepo.restaurentOrderDiscount(cartInfo.restaurent.uuid);
-            if (discountInfo.discount_rate > 0 && totalAmount <= discountInfo.max_amount && totalAmount >= discountInfo.min_amount) {
+            if (discountInfo && discountInfo.discount_rate > 0 && totalAmount <= discountInfo.max_amount && totalAmount >= discountInfo.min_amount) {
                 rebate_amount = totalAmount * discountInfo.discount_rate;
                 totalAmount = totalAmount - rebate_amount;
             }

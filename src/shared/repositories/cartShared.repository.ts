@@ -45,7 +45,7 @@ export class CartSharedRepo implements ICartSharedRepo {
                 .where("cart.uuid = :uuid", { uuid: cartUuid })
                 .andWhere("item.uuid = :itemUuid", { itemUuid: itemUuid })
                 .getOne();
-
+            console.log('cartItem: ', cartItem);
             return cartItem as CartItem;
         } catch (error: any) {
             return throwException(error);
@@ -61,9 +61,7 @@ export class CartSharedRepo implements ICartSharedRepo {
                 .where("cart.id = :id", { id: cartId })
                 .getMany();
 
-            if (cartItem && Object.keys(cartItem).length) {
-                return cartItem as CartItem[];
-            }
+            return cartItem as CartItem[];
             throw new NotFoundException('Cart not found');
         } catch (error: any) {
             return throwException(error);
