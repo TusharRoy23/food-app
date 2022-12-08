@@ -3,7 +3,6 @@ import { inject } from "inversify";
 import { controller, httpDelete, httpGet, httpPatch, httpPost, requestBody, requestParam } from "inversify-express-utils";
 import { User } from "../../../modules/user/entity/user.entity";
 import { TYPES } from "../../../core/type.core";
-import { CartDto } from "../dto/cart.dto";
 import { ICartService } from "../interfaces/ICart.service";
 import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
 import { CartItemDto } from "../dto/cart-item.dto";

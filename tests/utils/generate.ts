@@ -41,12 +41,13 @@ function generateRestaurentData(object = {}) {
     return {
         uuid: faker.datatype.uuid(),
         id: faker.datatype.number(),
-        name: faker.name.firstName(),
+        name: faker.company.companyName(),
         address: faker.address.cityName(),
         profile_img: faker.image.city(),
         opening_time: '08:08:00',
-        closing_time: '11:00:00'
-    };
+        closing_time: '11:00:00',
+        current_status: 'active',
+    } as Restaurent;
 }
 
 function generateRestaurentsData(n = 1, object = {}) {
@@ -131,7 +132,7 @@ function itemPayload() {
         meal_flavor: MealFlavor.SWEET,
         max_order_qty: faker.datatype.number({ min: 1, max: 100 }),
         min_order_qty: faker.datatype.number({ min: 1, max: 100 }),
-        price: +faker.commerce.price(),
+        price: +faker.commerce.price(5, 500, 2),
         item_status: ItemStatus.ACTIVE,
         discount_rate: 0,
         created_date: '2022-07-30 03:46:09',
@@ -141,11 +142,11 @@ function itemPayload() {
 function demoOrderResponseItemData(object = {}) {
     return {
         uuid: faker.datatype.uuid(),
-        amount: +faker.commerce.price(),
+        amount: +faker.commerce.price(5, 500, 2),
         qty: faker.datatype.number({ min: 1, max: 50 }),
         item: generateItemData()[0],
         deduction_rate: 0.0,
-        total_amount: +faker.commerce.price(),
+        total_amount: +faker.commerce.price(5, 1000, 2),
         ...object
     } as OrderItemResponse;
 }
@@ -154,14 +155,14 @@ function demoOrder(object = {}) {
     return {
         id: +faker.datatype.number(),
         uuid: faker.datatype.uuid(),
-        order_amount: +faker.commerce.price(),
+        order_amount: +faker.commerce.price(5, 500, 2),
         order_date: "2022-07-30 03:46:09",
         serial_number: `F-${Date.now()}`,
         rebate_amount: 0.0,
         paid_by: 'cash on delivery',
         order_status: 'pending',
         restaurent: generateRestaurentsData()[0],
-        total_amount: +faker.commerce.price(),
+        total_amount: +faker.commerce.price(5, 500, 2),
     } as Order;
 }
 
@@ -174,7 +175,8 @@ function generateOrderResponseItemData(n = 1, object = {}) {
 function demoOrderResponseData(object = {}) {
     return {
         uuid: faker.datatype.uuid(),
-        order_amount: +faker.commerce.price(),
+        order_amount: +faker.commerce.price(5, 500, 2),
+        total_amount: +faker.commerce.price(5, 500, 2),
         order_date: "2022-07-30 03:46:09",
         serial_number: `F-${Date.now()}`,
         rebate_amount: 0.0,
@@ -214,11 +216,11 @@ function demoOrderItemData(object = {}) {
     return {
         id: +faker.datatype.number(),
         uuid: faker.datatype.uuid(),
-        amount: +faker.commerce.price(),
+        amount: +faker.commerce.price(5, 500, 2),
         item: demoItemData(),
         order: demoOrder(),
         qty: faker.datatype.number({ min: 1, max: 100 }),
-        total_amount: +faker.commerce.price(),
+        total_amount: +faker.commerce.price(5, 500, 2),
     } as OrderItem
 }
 

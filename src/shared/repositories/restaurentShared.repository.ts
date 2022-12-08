@@ -19,7 +19,7 @@ export class RestaurentSharedRepo implements IRestaurentSharedRepo {
             const repo = await this.database.getRepository(Restaurent);
             // Need to check the restaurent status
             const restaurent: Restaurent = await repo.findOne({ where: { uuid: uuid } });
-            if (Object.keys(restaurent).length) {
+            if (restaurent && Object.keys(restaurent).length) {
                 return restaurent as Restaurent;
             }
             throw new NotFoundException('Restaurent not found');

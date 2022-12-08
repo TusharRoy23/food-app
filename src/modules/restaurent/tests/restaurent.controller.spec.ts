@@ -1,21 +1,10 @@
 import { agent } from "../../../../tests/utils/supertest.utils";
-import { injectable } from "inversify";
 import { TYPES } from "../../../core/type.core";
 import container from "../../../core/container.core";
-import { fakeUser, fakeRestaurent, fakeRestaurentList } from "../../../../tests/utils/fake.service";
-import { RegisterDto } from "../dto/index.dto";
+import { fakeUser, fakeRestaurent, fakeRestaurentList, FakeRestaurentService } from "../../../../tests/utils/fake.service";
+import { RegisterDto, } from "../dto/index.dto";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
-import { Restaurent } from "../entity/restaurent.entity";
 
-@injectable()
-class FakeRestaurentService implements IRestaurentService {
-    list(): Promise<Restaurent[]> {
-        return Promise.resolve(fakeRestaurentList);
-    }
-    register(registerDto: RegisterDto): Promise<string> {
-        return Promise.resolve('Restaurent Successfully Created!');
-    }
-}
 const payload: RegisterDto = {
     email: fakeUser.email,
     password: 'Tushar2',

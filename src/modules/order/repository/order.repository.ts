@@ -51,6 +51,7 @@ export class OrderRepository implements IOrderRepository {
                     restaurent: order.restaurent,
                 });
             });
+
             return orderResponse;
         } catch (error: any) {
             return throwException(error);
@@ -134,12 +135,12 @@ export class OrderRepository implements IOrderRepository {
 
                     delete value.item.restaurent;
 
-                    result['order_item'].push({
+                    result.order_item.push({
                         uuid: value.uuid,
                         qty: value.qty,
                         amount: value.amount,
                         total_amount: ele.total_amount,
-                        item: value.item,
+                        item: value.item as Item,
                     } as OrderItemResponse);
                 })
             );

@@ -11,6 +11,8 @@ import { Cart, CartItem } from "../../src/modules/cart/entity/index.entity";
 import { ICartSharedRepo, IRestaurentSharedRepo, IUserSharedRepo, IItemSharedRepository, IOrderSharedRepository } from "../../src/shared/interfaces/IIndexShared.repository";
 import { IDatabaseService } from "../../src/core/interface/IDatabase.service";
 import { OrderDiscount, OrderItem } from "../../src/modules/order/entity/index.entity";
+import { RatingDto, RegisterDto, CreateOrderDiscountDto, UpdateOrderDiscountDto } from "../../src/modules/restaurent/dto/index.dto";
+import { IRestaurentService } from "../../src/modules/restaurent/restaurent.module";
 
 // export const users: Array<User> = generateUsersData(1);
 export const fakeUser: User = fakeUsers[0];
@@ -88,6 +90,40 @@ export class FakeUserService implements IUserService {
     }
 }
 
+@injectable()
+export class FakeRestaurentService implements IRestaurentService {
+    getRestaurentList(): Promise<Restaurent[]> {
+        return Promise.resolve(fakeRestaurentList);
+    }
+    getOrderList(user: User): Promise<OrderResponse[]> {
+        return Promise.resolve(fakeOrderResponseList);
+    }
+    releaseOrder(orderUuid: String, user: User): Promise<String> {
+        return Promise.resolve('Order Released');
+    }
+    completeOrder(orderUuid: String, user: User): Promise<String> {
+        return Promise.resolve('Order Completed');
+    }
+    getOrderDiscount(user: User): Promise<OrderDiscount[]> {
+        return Promise.resolve(fakeOrderDiscountList);
+    }
+    createOrderDiscount(orderDiscountDto: CreateOrderDiscountDto, user: User): Promise<OrderDiscount> {
+        return Promise.resolve(fakeOrderDiscountList[0]);
+    }
+    updateOrderDiscount(orderDiscountDto: UpdateOrderDiscountDto, user: User, uuid: string): Promise<OrderDiscount> {
+        return Promise.resolve(fakeOrderDiscountList[0]);
+    }
+    deleteOrderDiscount(user: User, uuid: string): Promise<boolean> {
+        return Promise.resolve(true);
+    }
+    giveRating(user: User, ratingDto: RatingDto): Promise<String> {
+        return Promise.resolve('Rated');
+    }
+    register(registerDto: RegisterDto): Promise<string> {
+        return Promise.resolve('Restaurent Successfully Created!');
+    }
+}
+
 export class FakeRepository {
     findOne(response: any) {
         return jest.fn(() => Promise.resolve(response))
@@ -131,3 +167,4 @@ export const itemSharedRepo: IItemSharedRepository = {
 export const orderSharedRepo: IOrderSharedRepository = {
     getOrderItemInfo: jest.fn(() => Promise.resolve(fakeOrderItemList)),
 }
+
