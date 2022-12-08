@@ -66,7 +66,7 @@ export class Item {
     min_order_qty?: number;
 
     @Column({ nullable: true, type: 'float', default: 0 })
-    discount_rate: number;
+    discount_rate?: number;
 
     @Column({ nullable: true, type: 'timestamp' })
     created_date?: string;

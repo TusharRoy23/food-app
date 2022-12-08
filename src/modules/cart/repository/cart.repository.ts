@@ -45,7 +45,7 @@ export class CartRepository implements ICartRepository {
             cart.user = userInfo;
             cart.rebate_amount = 0.0;
 
-            let discountRate = itemInfo.discount_rate > 0 ? itemInfo.discount_rate / 100 : 1;
+            let discountRate = itemInfo.discount_rate! > 0 ? itemInfo.discount_rate! / 100 : 1;
             let cartAmount = cartItemDto.qty * itemInfo.price;
             let itemTotalAmount = cartItemDto.qty * (itemInfo.price * discountRate);
             cart.total_amount = itemTotalAmount;
@@ -137,7 +137,7 @@ export class CartRepository implements ICartRepository {
             }
             const cartItemRepo = await this.database.getRepository(CartItem);
             const cartItemInfo = await this.sharedCartRepo.cartItemInfo(cartUuid, cartItemDto.uuid);
-            const discountRate = itemInfo.discount_rate > 0 ? itemInfo.discount_rate / 100 : 1;
+            const discountRate = itemInfo.discount_rate! > 0 ? itemInfo.discount_rate! / 100 : 1;
             const itemTotalAmount = cartItemDto.qty * (itemInfo.price * discountRate);
             const itemAmount = cartItemDto.qty * itemInfo.price;
 
