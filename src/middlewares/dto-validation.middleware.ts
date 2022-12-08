@@ -9,11 +9,23 @@ export const DtoValidationMiddleware = (type: any, skipMissingProperties = false
             (errors: ValidationError[]) => {
                 if (errors.length > 0) {
                     const errMsg: any = {};
-                    errors.forEach(err => {
-                        errMsg[err.property] = [...(Object as any).values(err.constraints)]
+                    errors.forEach(error => {
+                        if (error?.children?.length) {
+                            const errorMsg: any = {};
+                            error?.children.forEach(err => {
+                                const childMsg: any = {};
+                                err.children?.forEach(er => {
+                                    childMsg[er.property] = [...(Object as any).values(er.constraints)];
+                                });
+                                errorMsg[err.property] = childMsg;
+                            })
+                            errMsg[error.property] = errorMsg;
+                        } else {
+                            errMsg[error.property] = [...(Object as any).values(error.constraints)]
+                        }
                     });
 
-                    res.status(400).json({
+                    return res.status(400).json({
                         statusCode: 400,
                         success: false,
                         message: '',
@@ -24,6 +36,6 @@ export const DtoValidationMiddleware = (type: any, skipMissingProperties = false
                     next();
                 }
             }
-        )
+        );
     }
 }

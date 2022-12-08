@@ -54,19 +54,19 @@ export class Item {
         restaurent => restaurent.item,
         { eager: true }
     )
-    restaurent: Restaurent;
+    restaurent?: Restaurent;
 
     @Column({ nullable: false, type: 'float', default: 0 })
     price: number;
 
     @Column({ nullable: true, type: 'timestamp' })
-    discount_start_date: string;
+    discount_start_date?: string;
 
     @Column({ nullable: true, type: 'timestamp' })
-    discount_end_date: string;
+    discount_end_date?: string;
 
     @Column({ nullable: true, type: 'float', default: 0 })
-    discount_rate: number;
+    discount_rate?: number;
 
     @Column({
         type: 'enum',

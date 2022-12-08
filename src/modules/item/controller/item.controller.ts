@@ -26,7 +26,7 @@ export class ItemController {
 
     @httpGet('/')
     public async retrive(req: Request & { user: User }, res: Response) {
-        const results = await this.itemService.retrive(req.user.restaurent);
+        const results = await this.itemService.retrive(req?.user?.restaurent.uuid);
         return res.status(200).json({
             'results': results
         });
@@ -39,7 +39,7 @@ export class ItemController {
         req: Request & { user: User },
         res: Response
     ) {
-        const result = await this.itemService.update(body, uuid, req.user.restaurent);
+        const result = await this.itemService.update(body, uuid, req?.user.restaurent);
         return res.status(202).json({
             'results': result
         });

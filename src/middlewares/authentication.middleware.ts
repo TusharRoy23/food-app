@@ -30,7 +30,7 @@ export class AuthenticationMiddleware extends BaseMiddleware {
             if (!req.body?.token) {
                 const decode = await this.jsonWebTokenService.decode(token as string, true);
                 req.user = decode as unknown as User;
-                if (decode.restaurent) {
+                if (decode.restaurent && Object.keys(decode.restaurent).length) {
                     const repo = await this.database.getRepository(Restaurent);
                     const info = await repo.findOne({ where: { uuid: decode.restaurent.uuid } }) as Restaurent;
                     req.user.restaurent = info;

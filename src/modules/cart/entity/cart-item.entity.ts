@@ -20,9 +20,9 @@ export class CartItem {
 
     @ManyToOne(
         type => Cart,
-        cart => cart.cart_item
+        cart => cart.cart_item,
     )
-    cart: Cart;
+    cart?: Cart;
 
     @Column({ nullable: false, type: 'float' })
     qty: number;
