@@ -33,12 +33,6 @@ import { ICartRepository, CartRepository, ICartService, CartService } from '../m
 /* Order Import */
 import { IOrderRepository, IOrderService, OrderRepository, OrderService } from '../modules/order/order.module';
 
-/* Cart Import */
-import { ICartRepository } from '../modules/cart/interfaces/ICart.repository';
-import { CartRepository } from '../modules/cart/repository/cart.repository';
-import { ICartService } from '../modules/cart/interfaces/ICart.service';
-import { CartService } from '../modules/cart/service/cart.service';
-
 /* Middleware Import */
 import { AuthenticationMiddleware } from '../middlewares/authentication.middleware';
 
