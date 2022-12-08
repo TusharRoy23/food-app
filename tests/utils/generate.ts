@@ -27,10 +27,12 @@ function generateUsersData(n = 1, object = {}) {
             length: n,
         },
         (_, i) => {
-            return generateUserData({ id: i, ...object }) as User;
+            return generateUserData({ ...object }) as User;
         }
     );
 }
 
 export const fakeUsers: Array<User> = generateUsersData(1);
 export const fakeUser: User = fakeUsers[0];
+export const accessToken: string = faker.datatype.uuid() + faker.datatype.uuid();
+export const refreshToken: string = faker.datatype.uuid() + faker.datatype.uuid();

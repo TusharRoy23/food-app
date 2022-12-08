@@ -28,9 +28,8 @@ describe('User Repository Test', () => {
 
     describe('Repository', () => {
         it('getRepository method called', () => {
-            const spy = jest.spyOn(dbService, 'getRepository');
             dbService.getRepository(User);
-            expect(spy).toHaveBeenCalled();
+            expect(dbService.getRepository).toHaveBeenCalled();
         });
     });
 
