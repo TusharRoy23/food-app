@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { graphQlAgents } from '../../../test-utils/supertest-graphql.utils';
+import { graphQlAgents } from '../../../test-utils/supertest-graphql.server';
 import { ORDER_LIST, CREATE_ORDER } from './order-source';
 
 describe("GraphQL - Order API Test", () => {

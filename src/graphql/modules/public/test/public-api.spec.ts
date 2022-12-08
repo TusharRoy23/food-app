@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { graphQlAgents } from '../../../test-utils/supertest-graphql.utils';
+import { graphQlAgents } from '../../../test-utils/supertest-graphql.server';
 import { GET_RESTAURENTS } from './public-source';
 
 

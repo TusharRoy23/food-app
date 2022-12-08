@@ -28,7 +28,6 @@ server.setConfig(async app => {
     app.use(express.json());
     await apolloServer.start();
     apolloServer.applyMiddleware({ app, path: '/graphql' });
-
 });
 
 const errorResponse = (req: Request, res: Response, message: string, statusCode: any, error?: any) => {

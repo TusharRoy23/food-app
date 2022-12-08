@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { graphQlAgents } from '../../../test-utils/supertest-graphql.utils';
+import { graphQlAgents } from '../../../test-utils/supertest-graphql.server';
 import { CREATE_CART, UPDATE_CART, DELETE_CART, GET_CART_INFO } from "./cart-source";
 
 describe("GraphQL - Cart API Test", () => {
