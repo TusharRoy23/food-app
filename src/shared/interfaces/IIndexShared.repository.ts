@@ -4,6 +4,7 @@ import { IRestaurentSharedRepo } from './IRestaurentShared.repository';
 import { IUserSharedRepo } from './IUserShared.repository';
 import { IJsonWebTokenService } from './IJsonWebToken.service';
 import { IOrderSharedRepository } from "./IOrderShared.repository";
+import { IElasticsearchService } from './IElasticsearch.service';
 
 export {
     ICartSharedRepo,
@@ -12,4 +13,5 @@ export {
     IUserSharedRepo,
     IJsonWebTokenService,
     IOrderSharedRepository,
+    IElasticsearchService,
 }

@@ -16,12 +16,40 @@ services:
     restart: always
     env_file:
       - ./env/.env.dev
-    ports: 
+    ports:
       - "${WEBSERVER_PORT}:${PGADMIN_LISTEN_PORT}"
-    volumes: 
+    volumes:
       - ./pgadmin-data:/var/lib/pgadmin # Named volumn in container
-    depends_on: 
+    depends_on:
       - db
+    networks:
+      - food_app_api
+  foodes01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
+    container_name: foodes01
+    env_file:
+      - ./env/.env.dev
+    volumes:
+      - foodEsData01:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    networks:
+      - food_app_api
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_NODE}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ports:
+      - 5601:5601
+    depends_on:
+      - foodes01
     networks:
       - food_app_api
   dev:
@@ -47,3 +75,4 @@ networks:
 volumes:
   pgdata:
   pgadmin-data:
+  foodEsData01:

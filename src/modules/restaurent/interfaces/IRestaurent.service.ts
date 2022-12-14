@@ -15,4 +15,5 @@ export interface IRestaurentService {
     updateOrderDiscount(orderDiscountDto: UpdateOrderDiscountDto, user: User, uuid: string): Promise<OrderDiscount>;
     deleteOrderDiscount(user: User, uuid: string): Promise<boolean>;
     giveRating(user: User, ratingDto: RatingDto): Promise<String>;
+    searchRestaurant(keyword: string): Promise<Restaurent[]>;
 }

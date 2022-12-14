@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { inject } from "inversify";
 import { controller, httpGet, httpPost, requestBody } from "inversify-express-utils";
 import { TYPES } from "../../../core/type.core";
-import { RegisterDto } from "../dto/index.dto";
+import { RegisterDto, RatingDto, SearchRestaurantDto } from "../dto/index.dto";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
 import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
-import { RatingDto } from "../dto/index.dto";
 import { User } from "../../../modules/user/entity/index.entity";
 
 @controller('/public/restaurent')
@@ -40,6 +39,18 @@ export class PublicRestaurentController {
         const result = await this.restaurentService.giveRating(req.user, body);
         return res.status(201).json({
             'message': result
+        });
+    }
+
+    @httpPost('/search-restaurent', DtoValidationMiddleware(SearchRestaurantDto))
+    public async searchRestaurant(
+        @requestBody() body: SearchRestaurantDto,
+        req: Request,
+        res: Response
+    ) {
+        const result = await this.restaurentService.searchRestaurant(body.keyword);
+        return res.status(200).json({
+            'results': result
         });
     }
 }

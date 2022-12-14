@@ -56,4 +56,8 @@ export class RestaurentService implements IRestaurentService {
     async giveRating(user: User, ratingDto: RatingDto): Promise<String> {
         return await this.restaurentRepo.giveRating(user, ratingDto);
     }
+
+    async searchRestaurant(keyword: string): Promise<Restaurent[]> {
+        return await this.restaurentRepo.searchRestaurant(keyword);
+    }
 }
