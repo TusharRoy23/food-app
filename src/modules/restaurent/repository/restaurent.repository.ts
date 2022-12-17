@@ -1,5 +1,6 @@
 import { injectable, inject } from "inversify";
 import moment from "moment";
+import { ILike } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
 import { IDatabaseService } from "../../../core/interface/IDatabase.service";
 import { TYPES } from "../../../core/type.core";
@@ -10,7 +11,7 @@ import { CurrentStatus, OrderStatus, UserRole, UserType } from "../../../shared/
 import { Restaurent } from "../entity/restaurent.entity";
 import { BadRequestException, ForbiddenException, NotFoundException, throwException } from "../../../shared/errors/all.exception";
 import { Order, OrderDiscount, OrderItem } from "../../../modules/order/entity/index.entity";
-import { IOrderSharedRepository, IRestaurentSharedRepo, IUserSharedRepo } from "../../../shared/interfaces/IIndexShared.repository";
+import { IElasticsearchService, IOrderSharedRepository, IRestaurentSharedRepo, IUserSharedRepo } from "../../../shared/interfaces/IIndexShared.repository";
 import { OrderResponse } from "../../../shared/utils/response.utils";
 import { RestaurentRating, RestaurentItem } from "../entity/index.entity";
 
@@ -21,6 +22,7 @@ export class RestaurentRepository implements IRestaurentRepository {
         @inject(TYPES.IRestaurentSharedRepo) private readonly restaurentSharedRepo: IRestaurentSharedRepo,
         @inject(TYPES.IOrderSharedRepository) private readonly orderSharedRepo: IOrderSharedRepository,
         @inject(TYPES.IUserSharedRepo) private readonly userSharedRepo: IUserSharedRepo,
+        @inject(TYPES.IElasticsearchService) private readonly elasticsearchService: IElasticsearchService,
     ) { }
 
     async releaseOrder(orderUuid: String, user: User): Promise<String> {
@@ -92,7 +94,7 @@ export class RestaurentRepository implements IRestaurentRepository {
     async getRestaurentList(): Promise<Restaurent[]> {
         try {
             const restaurentRepo = await this.database.getRepository(Restaurent);
-            return await restaurentRepo.find();
+            return await restaurentRepo.findBy({ current_status: 'active' })
         } catch (error: any) {
             return throwException(error);
         }
@@ -182,6 +184,7 @@ export class RestaurentRepository implements IRestaurentRepository {
                 restaurent: createdRestaurent
             });
 
+            await this.elasticsearchService.indexing({ index: 'restaurants', body: restaurent });
             return 'Restaurent Successfully Created!';
         } catch (error: any) {
             if (error.code == 23505) throw new BadRequestException('Email Already Exists!');
@@ -334,6 +337,38 @@ export class RestaurentRepository implements IRestaurentRepository {
                 await repo.save(restaurentRating);
             }
             return 'Thanks for your feedback';
+        } catch (error: any) {
+            return throwException(error);
+        }
+    }
+
+    async searchRestaurant(keyword: string): Promise<Restaurent[]> {
+        try {
+            return await this.elasticsearchService.search({
+                index: 'restaurants',
+                queryObj: {
+                    bool: {
+                        must: [
+                            {
+                                term: {
+                                    'current_status.keyword': {
+                                        "value": "active"
+                                    }
+                                }
+                            }
+                        ],
+                        should: [
+                            {
+                                query_string: {
+                                    fields: ["name", "address"],
+                                    query: `${keyword}*`
+                                }
+                            }
+                        ],
+                        "minimum_should_match": 1
+                    },
+                }
+            });
         } catch (error: any) {
             return throwException(error);
         }

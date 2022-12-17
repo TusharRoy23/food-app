@@ -6,9 +6,10 @@ import { IDatabaseService } from './interface/IDatabase.service';
 /* Shared Service Import */
 import { Logger } from '../shared/services/logger.service';
 import { JsonWebTokenService } from '../shared/services/jsonWebToken.service';
+import { ElasticSearchService } from '../shared/services/elasticsearch.service';
 
 /* Shared Repository Import */
-import { ICartSharedRepo, IUserSharedRepo, IRestaurentSharedRepo, IJsonWebTokenService, IItemSharedRepository, IOrderSharedRepository } from '../shared/interfaces/IIndexShared.repository';
+import { ICartSharedRepo, IUserSharedRepo, IRestaurentSharedRepo, IJsonWebTokenService, IItemSharedRepository, IOrderSharedRepository, IElasticsearchService } from '../shared/interfaces/IIndexShared.repository';
 import { CartSharedRepo, UserSharedRepo, RestaurentSharedRepo, ItemSharedRepository, OrderSharedRepository } from '../shared/repositories/indexShared.repository';
 
 /* All Controller Import */
@@ -43,6 +44,7 @@ container.bind<IDatabaseService>(TYPES.IDatabaseService).to(DatabaseService);
 /* Shared Service Bind */
 container.bind(TYPES.Logger).to(Logger);
 container.bind<IJsonWebTokenService>(TYPES.IJsonWebTokenService).to(JsonWebTokenService);
+container.bind<IElasticsearchService>(TYPES.IElasticsearchService).to(ElasticSearchService);
 
 /* Shared Repository Bind */
 container.bind<ICartSharedRepo>(TYPES.ICartSharedRepo).to(CartSharedRepo);
