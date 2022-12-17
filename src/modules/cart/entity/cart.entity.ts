@@ -1,6 +1,6 @@
 import { validateOrReject } from "class-validator";
 import { classToPlain, Exclude } from "class-transformer";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 import { Restaurent } from "../../restaurent/entity/restaurent.entity";
 import { User } from "../../user/entity/user.entity";
 import { CartStatus } from "../../../shared/utils/enum";
@@ -8,7 +8,7 @@ import { CartItem } from "./cart-item.entity";
 import { OrderDiscount } from "../../../modules/order/entity/order-discount.entity";
 
 @Entity()
-export class Cart {
+export class Cart extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

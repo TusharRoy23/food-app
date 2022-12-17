@@ -1,11 +1,10 @@
-import { classToPlain, Exclude } from "class-transformer";
-import { validateOrReject } from "class-validator";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Exclude } from "class-transformer";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 import { Item } from "../../item/entity/item.entity";
 import { Cart } from "./cart.entity";
 
 @Entity()
-export class CartItem {
+export class CartItem extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

@@ -1,10 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 import { classToPlain, Exclude } from "class-transformer";
 import { Order } from "./order.entity";
 import { Item } from "../../../modules/item/entity/item.entity";
 
 @Entity()
-export class OrderItem {
+export class OrderItem extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

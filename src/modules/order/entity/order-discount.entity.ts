@@ -1,9 +1,9 @@
 import { classToPlain, Exclude } from "class-transformer";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 import { Restaurent } from "../../../modules/restaurent/entity/restaurent.entity";
 
 @Entity()
-export class OrderDiscount {
+export class OrderDiscount extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

@@ -1,10 +1,10 @@
 import { Exclude } from "class-transformer";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 import { User } from "../../../modules/user/entity/user.entity";
 import { Restaurent } from "./restaurent.entity";
 
 @Entity()
-export class RestaurentRating {
+export class RestaurentRating extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

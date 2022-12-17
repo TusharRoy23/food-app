@@ -14,6 +14,7 @@ import {
     RequestTimeoutException
 } from './shared/errors/all.exception';
 import apolloServer from './apollo.server';
+import { adminServerinit } from './modules/admin/admin.server';
 
 
 let router = express.Router({
@@ -22,12 +23,30 @@ let router = express.Router({
     strict: false
 });
 
+const DEFAULT_ADMIN = {
+    email: 'admin@gm.com',
+    password: '12345',
+}
+
+const authenticate = async (email: string, password: string) => {
+    if (email === DEFAULT_ADMIN.email && password === DEFAULT_ADMIN.password) {
+        return Promise.resolve(DEFAULT_ADMIN)
+    }
+    return null
+}
+
 export const server = new InversifyExpressServer(container, router);
 server.setConfig(async app => {
-    app.use(express.urlencoded({ extended: true }));
-    app.use(express.json());
-    await apolloServer.start();
-    apolloServer.applyMiddleware({ app, path: '/graphql' });
+    try {
+        await adminServerinit(app);
+        app.use(express.urlencoded({ extended: true }));
+        app.use(express.json());
+        await apolloServer.start();
+        apolloServer.applyMiddleware({ app, path: '/graphql' });
+    } catch (error) {
+        console.log('error: ', error);
+    }
+
 });
 
 const errorResponse = (req: Request, res: Response, message: string, statusCode: any, error?: any) => {
