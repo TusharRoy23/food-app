@@ -1,13 +1,13 @@
 import { classToPlain, Exclude } from "class-transformer";
 import { validateOrReject } from "class-validator";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, BaseEntity } from "typeorm";
 import { Restaurent } from "../../../modules/restaurent/entity/restaurent.entity";
 import { User } from "../../../modules/user/entity/user.entity";
 import { OrderStatus, PaidBy } from "../../../shared/utils/enum";
 import { OrderDiscount, OrderItem } from "./index.entity";
 
 @Entity()
-export class Order {
+export class Order extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

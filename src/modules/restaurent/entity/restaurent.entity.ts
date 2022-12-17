@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, OneToMany, BaseEntity } from 'typeorm';
 import { classToPlain, Exclude } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { CurrentStatus } from '../../../shared/utils/enum';
@@ -7,7 +7,7 @@ import { Item } from '../../item/entity/item.entity';
 import { Cart } from '../../cart/entity/cart.entity';
 
 @Entity()
-export class Restaurent {
+export class Restaurent extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

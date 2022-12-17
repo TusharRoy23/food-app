@@ -1,9 +1,9 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { validateOrReject } from "class-validator";
 import { classToPlain, Exclude } from "class-transformer";
 
 @Entity()
-export class UserInfo {
+export class UserInfo extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;

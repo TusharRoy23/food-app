@@ -1,4 +1,4 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn, BaseEntity } from 'typeorm';
 import { IsEmail, validateOrReject } from 'class-validator';
 import { classToPlain, Exclude } from 'class-transformer';
 import { hashPassword, isPasswordMatch } from '../../../shared/utils/password.utils';
@@ -7,7 +7,7 @@ import { Restaurent } from '../../restaurent/entity/restaurent.entity';
 import { UserInfo } from './user-info.entity';
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     @Exclude({ toPlainOnly: true })
     id: number;
