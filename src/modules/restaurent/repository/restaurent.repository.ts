@@ -1,8 +1,7 @@
 import { injectable, inject } from "inversify";
 import moment from "moment";
-import { ILike } from "typeorm";
 import { v4 as uuidv4 } from 'uuid';
-import { IDatabaseService } from "../../../core/interface/IDatabase.service";
+import { IDatabaseService, IRedisService } from "../../../core/index.core";
 import { TYPES } from "../../../core/type.core";
 import { CreateOrderDiscountDto, RatingDto, RegisterDto, UpdateOrderDiscountDto } from "../dto/index.dto";
 import { IRestaurentRepository } from "../interfaces/IRestaurent.repository";
@@ -23,6 +22,7 @@ export class RestaurentRepository implements IRestaurentRepository {
         @inject(TYPES.IOrderSharedRepository) private readonly orderSharedRepo: IOrderSharedRepository,
         @inject(TYPES.IUserSharedRepo) private readonly userSharedRepo: IUserSharedRepo,
         @inject(TYPES.IElasticsearchService) private readonly elasticsearchService: IElasticsearchService,
+        @inject(TYPES.IRedisService) private readonly redisService: IRedisService,
     ) { }
 
     async releaseOrder(orderUuid: String, user: User): Promise<String> {
@@ -93,8 +93,17 @@ export class RestaurentRepository implements IRestaurentRepository {
 
     async getRestaurentList(): Promise<Restaurent[]> {
         try {
-            const restaurentRepo = await this.database.getRepository(Restaurent);
-            return await restaurentRepo.findBy({ current_status: 'active' })
+            const restaurents = await this.redisService.getData({ key: 'restaurants' });
+            if (restaurents) {
+                return JSON.parse(restaurents);
+            } else {
+                const restaurentRepo = await this.database.getRepository(Restaurent);
+                const list = await restaurentRepo.findBy({ current_status: 'active' });
+                if (list.length) {
+                    this.redisService.saveData({ key: 'restaurants', exp: 200, value: JSON.stringify(list) });
+                }
+                return list;
+            }
         } catch (error: any) {
             return throwException(error);
         }

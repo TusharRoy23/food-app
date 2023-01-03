@@ -1,12 +1,9 @@
 import { Container } from 'inversify';
 import { TYPES } from './type.core';
-import { DatabaseService } from './service/database.service';
-import { IDatabaseService } from './interface/IDatabase.service';
+import { DatabaseService, IDatabaseService, IRedisService, RedisService } from './index.core';
 
 /* Shared Service Import */
-import { Logger } from '../shared/services/logger.service';
-import { JsonWebTokenService } from '../shared/services/jsonWebToken.service';
-import { ElasticSearchService } from '../shared/services/elasticsearch.service';
+import { Logger, JsonWebTokenService, ElasticSearchService } from '../shared/services/index.service';
 
 /* Shared Repository Import */
 import { ICartSharedRepo, IUserSharedRepo, IRestaurentSharedRepo, IJsonWebTokenService, IItemSharedRepository, IOrderSharedRepository, IElasticsearchService } from '../shared/interfaces/IIndexShared.repository';
@@ -40,6 +37,7 @@ import { AuthenticationMiddleware } from '../middlewares/authentication.middlewa
 const container = new Container();
 
 container.bind<IDatabaseService>(TYPES.IDatabaseService).to(DatabaseService);
+container.bind<IRedisService>(TYPES.IRedisService).to(RedisService);
 
 /* Shared Service Bind */
 container.bind(TYPES.Logger).to(Logger);
