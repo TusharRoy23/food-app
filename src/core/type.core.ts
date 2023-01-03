@@ -21,4 +21,5 @@ export const TYPES = {
     IItemSharedRepo: Symbol.for('IItemSharedRepo'),
     IOrderSharedRepository: Symbol.for('IOrderSharedRepository'),
     IElasticsearchService: Symbol.for('IElasticsearchService'),
+    IRedisService: Symbol.for('IRedisService'),
 };
