@@ -8,7 +8,7 @@ import { UpdateOrderDiscountDto } from "../dto/update-order-discount.dto";
 import { Restaurent } from "../entity/restaurent.entity";
 import { IRestaurentRepository } from "../interfaces/IRestaurent.repository";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
-import { OrderResponse } from "../../../shared/utils/response.utils";
+import { OrderResponse, PaginatedOrderResponse, PaginationPayload } from "../../../shared/utils/response.utils";
 import { RatingDto } from "../dto/rating.dto";
 
 @injectable()
@@ -21,8 +21,8 @@ export class RestaurentService implements IRestaurentService {
         return await this.restaurentRepo.getRestaurentList();
     }
 
-    async getOrderList(user: User): Promise<OrderResponse[]> {
-        return await this.restaurentRepo.getOrderList(user);
+    async getOrderList(user: User, pagination: PaginationPayload): Promise<PaginatedOrderResponse> {
+        return await this.restaurentRepo.getOrderList(user, pagination);
     }
 
     async releaseOrder(orderUuid: String, user: User): Promise<String> {

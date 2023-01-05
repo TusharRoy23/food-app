@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
-import { controller, httpDelete, httpGet, httpPatch, httpPost, requestBody, requestParam } from "inversify-express-utils";
+import { controller, httpDelete, httpGet, httpPatch, httpPost, queryParam, request, requestBody, requestParam, response } from "inversify-express-utils";
 import { DtoValidationMiddleware } from "../../../middlewares/dto-validation.middleware";
 import { TYPES } from "../../../core/type.core";
 import { RoleMiddleware } from "../../../middlewares/role.middleware";
 import { User } from "../../user/entity/user.entity";
 import { CreateOrderDiscountDto, UpdateOrderDiscountDto } from "../dto/index.dto";
 import { IRestaurentService } from "../interfaces/IRestaurent.service";
+import { pagination } from "../../../shared/utils/pagination.utils";
+import { successResponse } from "../../../shared/utils/success.utils";
 @controller('/restaurent', TYPES.AuthenticationMiddleware, RoleMiddleware('owner'))
 export class RestaurentController {
     constructor(
@@ -15,13 +17,13 @@ export class RestaurentController {
 
     @httpGet('/order-list/')
     public async getOrderList(
-        req: Request & { user: User },
-        res: Response,
+        @queryParam("page") page: number,
+        @queryParam("page_size") pageSize: number,
+        @request() req: Request & { user: User },
+        @response() res: Response,
     ) {
-        const result = await this.restaurentService.getOrderList(req.user);
-        return res.status(200).json({
-            'result': result
-        });
+        const result = await this.restaurentService.getOrderList(req.user, pagination({ page, size: pageSize }));
+        successResponse({ status: 200, result, res });
     }
 
     @httpPost('/release-order/:uuid')

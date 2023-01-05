@@ -55,3 +55,23 @@ export class OrderItemResponse {
     total_amount: number;
     item: Item;
 }
+
+export class PaginatedOrderResponse {
+    orders: OrderResponse[];
+    count: number;
+    currentPage: number;
+    totalPages: number;
+    nextPage: number;
+}
+
+export class PaginationPayload {
+    limit: number;
+    offset: number;
+    currentPage: number;
+}
+export class PaginationDataResponse {
+    count: number;
+    currentPage: number;
+    totalPages: number;
+    nextPage: number;
+}

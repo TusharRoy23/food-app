@@ -9,13 +9,14 @@ import { BadRequestException, throwException } from "../../../shared/errors/all.
 import { ICartSharedRepo } from "../../../shared/interfaces/ICartShared.repository";
 import { Order } from "../entity/order.entity";
 import { IOrderRepository } from "../interfaces/IOrder.repository";
-import { OrderItemResponse, OrderResponse } from "../../../shared/utils/response.utils";
+import { OrderItemResponse, OrderResponse, PaginatedOrderResponse, PaginationPayload } from "../../../shared/utils/response.utils";
 import { OrderItem } from "../entity/order-item.entity";
 import { CartStatus, CurrentStatus } from "../../../shared/utils/enum";
 import { OrderDto } from "../dto/order.dto";
-import { IRestaurentSharedRepo, IItemSharedRepository } from "../../../shared/interfaces/IIndexShared.repository";
+import { IRestaurentSharedRepo, IItemSharedRepository, IOrderSharedRepository } from "../../../shared/interfaces/IIndexShared.repository";
 import { Item } from "../../../modules/item/entity/item.entity";
 import { Restaurent } from "../../../modules/restaurent/entity/restaurent.entity";
+import { getPaginationData } from "../../../shared/utils/pagination.utils";
 
 @injectable()
 export class OrderRepository implements IOrderRepository {
@@ -24,35 +25,65 @@ export class OrderRepository implements IOrderRepository {
         @inject(TYPES.ICartSharedRepo) private readonly cartSharedRepo: ICartSharedRepo,
         @inject(TYPES.IRestaurentSharedRepo) private readonly sharedResRepo: IRestaurentSharedRepo,
         @inject(TYPES.IItemSharedRepo) private readonly sharedItemRepo: IItemSharedRepository,
+        @inject(TYPES.IOrderSharedRepository) private readonly orderSharedRepo: IOrderSharedRepository,
     ) { }
 
-    async getOrdersByUser(userUuid: string): Promise<OrderResponse[]> {
+    async getOrdersByUser(userUuid: string, pagination: PaginationPayload): Promise<PaginatedOrderResponse> {
         try {
             const repo = await this.database.getRepository(Order);
-            const result: Order[] = await repo.createQueryBuilder('order')
+            const query = repo.createQueryBuilder('order')
                 .innerJoinAndSelect("order.restaurent", "restaurent")
-                .innerJoinAndSelect("order.order_item", "order_item")
-                .innerJoinAndSelect("order_item.item", 'item')
                 .innerJoinAndSelect("order.user", "user")
                 .where("user.uuid = :uuid", { uuid: userUuid })
+
+
+            const total = await query.limit(pagination.limit)
+                .offset(pagination.offset).getCount();
+            const paginationData = getPaginationData({ total, page: pagination.currentPage, limit: pagination.limit });
+
+            const orders: Order[] = await query
+                .limit(pagination.limit)
+                .offset(pagination.offset)
                 .getMany();
             const orderResponse: OrderResponse[] = [];
-            result.forEach(order => {
-                orderResponse.push({
-                    uuid: order.uuid,
-                    order_amount: order.order_amount,
-                    rebate_amount: order.rebate_amount,
-                    total_amount: order.total_amount,
-                    order_date: order.order_date,
-                    order_status: order.order_status,
-                    paid_by: order.paid_by,
-                    serial_number: order.serial_number,
-                    order_item: order.order_item,
-                    restaurent: order.restaurent,
-                });
-            });
 
-            return orderResponse;
+            for (let index = 0; index < orders.length; index++) {
+                const order = orders[index] as Order;
+                const orderItem: OrderItem[] = await this.orderSharedRepo.getOrderItemInfo(order.uuid);
+                const newOrderItem = orderItem.map((data: OrderItem) => ({
+                    uuid: data.uuid,
+                    qty: data.qty,
+                    amount: data.amount,
+                    total_amount: data.total_amount,
+                    item: data.item,
+                }) as OrderItem);
+
+                orderResponse.push(
+                    {
+                        uuid: order.uuid,
+                        serial_number: order.serial_number,
+                        order_amount: order.order_amount,
+                        total_amount: order.total_amount,
+                        rebate_amount: order.rebate_amount,
+                        order_date: order.order_date,
+                        order_status: order.order_status,
+                        paid_by: order.paid_by,
+                        order_discount: order.order_discount,
+                        user: order.user,
+                        order_item: newOrderItem,
+                    }
+                );
+            }
+
+            const response: PaginatedOrderResponse = {
+                orders: orderResponse,
+                count: total,
+                currentPage: paginationData.currentPage,
+                totalPages: paginationData.totalPages,
+                nextPage: paginationData.nextPage
+            };
+
+            return response;
         } catch (error: any) {
             return throwException(error);
         }

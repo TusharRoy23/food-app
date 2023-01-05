@@ -2,12 +2,12 @@ import { User } from "../../user/entity/index.entity";
 import { OrderDiscount } from "../../../modules/order/entity/order-discount.entity";
 import { CreateOrderDiscountDto, RatingDto, RegisterDto, UpdateOrderDiscountDto } from "../dto/index.dto";
 import { Restaurent } from "../entity/restaurent.entity";
-import { OrderResponse } from "../../../shared/utils/response.utils";
+import { OrderResponse, PaginatedOrderResponse, PaginationPayload } from "../../../shared/utils/response.utils";
 
 export interface IRestaurentRepository {
     register(registerDto: RegisterDto): Promise<string>;
     getRestaurentList(): Promise<Restaurent[]>;
-    getOrderList(user: User): Promise<OrderResponse[]>;
+    getOrderList(user: User, pagination: PaginationPayload): Promise<PaginatedOrderResponse>;
     releaseOrder(orderUuid: String, user: User): Promise<String>;
     completeOrder(orderUuid: String, user: User): Promise<String>;
     getOrderDiscount(user: User): Promise<OrderDiscount[]>;

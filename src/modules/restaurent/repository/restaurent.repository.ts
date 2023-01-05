@@ -11,8 +11,9 @@ import { Restaurent } from "../entity/restaurent.entity";
 import { BadRequestException, ForbiddenException, NotFoundException, throwException } from "../../../shared/errors/all.exception";
 import { Order, OrderDiscount, OrderItem } from "../../../modules/order/entity/index.entity";
 import { IElasticsearchService, IOrderSharedRepository, IRestaurentSharedRepo, IUserSharedRepo } from "../../../shared/interfaces/IIndexShared.repository";
-import { OrderResponse } from "../../../shared/utils/response.utils";
+import { OrderResponse, PaginatedOrderResponse, PaginationPayload } from "../../../shared/utils/response.utils";
 import { RestaurentRating, RestaurentItem } from "../entity/index.entity";
+import { getPaginationData } from "../../../shared/utils/pagination.utils";
 
 @injectable()
 export class RestaurentRepository implements IRestaurentRepository {
@@ -109,15 +110,22 @@ export class RestaurentRepository implements IRestaurentRepository {
         }
     }
 
-    async getOrderList(user: User): Promise<OrderResponse[]> {
+    async getOrderList(user: User, pagination: PaginationPayload): Promise<PaginatedOrderResponse> {
         try {
             const restaurent: Restaurent = await this.getRestaurentInfo(user.restaurent.uuid);
             const repo = await this.database.getRepository(Order);
-            const orders = await repo.createQueryBuilder('order')
+            const query = repo.createQueryBuilder('order')
                 .innerJoinAndSelect('order.restaurent', 'restaurent')
                 .leftJoinAndSelect('order.order_discount', 'order_discount')
                 .innerJoinAndSelect('order.user', 'user')
-                .where('restaurent.id = :id', { id: restaurent.id })
+                .where('restaurent.id = :id', { id: restaurent.id });
+
+            const total = await query.getCount();
+            const paginationData = getPaginationData({ total, page: pagination.currentPage, limit: pagination.limit });
+
+            const orders = await query
+                .limit(pagination.limit)
+                .offset(pagination.offset)
                 .getMany();
 
             const orderResponseList: OrderResponse[] = [];
@@ -150,7 +158,15 @@ export class RestaurentRepository implements IRestaurentRepository {
                 );
             }
 
-            return orderResponseList;
+            const response: PaginatedOrderResponse = {
+                orders: orderResponseList,
+                count: total,
+                currentPage: paginationData.currentPage,
+                totalPages: paginationData.totalPages,
+                nextPage: paginationData.nextPage
+            };
+
+            return response;
         } catch (error: any) {
             return throwException(error);
         }
