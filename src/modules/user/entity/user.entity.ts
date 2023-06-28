@@ -5,7 +5,6 @@ import { hashPassword, isPasswordMatch } from '../../../shared/utils/password.ut
 import { CurrentStatus, UserRole, UserType } from '../../../shared/utils/enum';
 import { Restaurent } from '../../restaurent/entity/restaurent.entity';
 import { UserInfo } from './user-info.entity';
-import { Cart } from '../../cart/entity/cart.entity';
 
 @Entity()
 export class User {

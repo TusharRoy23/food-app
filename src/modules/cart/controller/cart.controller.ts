@@ -14,14 +14,14 @@ export class CartController {
         @inject(TYPES.ICartService) private readonly cartService: ICartService
     ) { }
 
-    @httpPost('/restaurent/:uuid', DtoValidationMiddleware(CartDto))
+    @httpPost('/restaurent/:uuid', DtoValidationMiddleware(CartItemDto))
     public async create(
-        @requestBody() cartDto: CartDto,
+        @requestBody() cartItemDto: CartItemDto,
         @requestParam('uuid') restaurentUuid: string,
         req: Request & { user: User },
         res: Response
     ) {
-        const result = await this.cartService.create(cartDto, req?.user?.uuid, restaurentUuid);
+        const result = await this.cartService.create(cartItemDto, req?.user?.uuid, restaurentUuid);
         return res.status(201).json({
             'result': result
         });
@@ -47,8 +47,10 @@ export class CartController {
         req: Request & { user: User },
         res: Response
     ) {
-        await this.cartService.delete(itemUuid, cartUuid, req?.user.uuid);
-        return res.sendStatus(204);
+        const result = await this.cartService.delete(itemUuid, cartUuid, req?.user.uuid);
+        return res.status(201).json({
+            'result': result
+        });
     }
 
     @httpGet("/:uuid")

@@ -1,15 +1,15 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../core/type.core";
 import { IUserRepository } from "../interfaces/IUser.repository";
-import { NotFoundException, InternalServerErrorException } from "../../../shared/errors/all.exception";
+import { NotFoundException, throwException } from "../../../shared/errors/all.exception";
 import { IDatabaseService } from "../../../core/interface/IDatabase.service";
 import { User } from "../entity/user.entity";
 
 @injectable()
 export class UserRepository implements IUserRepository {
     constructor(
-        @inject(TYPES.IDatabaseService) private readonly database: IDatabaseService 
-    ) {}
+        @inject(TYPES.IDatabaseService) private readonly database: IDatabaseService
+    ) { }
 
     async getByUuid(uuid: string): Promise<User> {
         try {
@@ -20,8 +20,7 @@ export class UserRepository implements IUserRepository {
             }
             throw new NotFoundException('User not found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException('User not found');
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 }

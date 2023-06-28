@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, MaxLength, Min, MinLength } from "class-validator";
 import { ItemType, MealFlavor, MealState, MealType, ItemStatus } from "../../../shared/utils/enum";
 import { isValidDate, isValidDateRange, isValidEnum, isValidNumber } from "../../../shared/dto/custom.validator";
 
@@ -41,10 +41,12 @@ export class CreateItemDto {
     @isValidNumber('price')
     discount_rate?: number;
 
-    @isValidDate('discount_start_date')
-    discount_start_date?: string;
+    @Max(100)
+    @IsNumber()
+    max_order_qty?: number;
 
-    @isValidDate('discount_end_date')
-    @isValidDateRange('discount_start_date')
-    discount_end_date?: string;
+    @Min(1)
+    @IsNumber()
+    @IsOptional()
+    min_order_qty?: number;
 }

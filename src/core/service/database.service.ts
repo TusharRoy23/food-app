@@ -8,9 +8,9 @@ import { IDatabaseService } from '../interface/IDatabase.service';
 @injectable()
 export class DatabaseService implements IDatabaseService {
     private static myDataSource: DataSource;
-    constructor (
+    constructor(
         @inject(TYPES.Logger) private readonly logger: Logger
-    ) {}
+    ) { }
 
     private async getConnection(): Promise<DataSource> {
         if (DatabaseService.myDataSource?.isInitialized) {

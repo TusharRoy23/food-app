@@ -7,12 +7,11 @@ import { CartReponse } from "../../../shared/utils/response.utils";
 import { fakeCartData, fakeCartItemData, fakeItem, fakeUser } from "../../../../tests/utils/fake.service";
 import { fakeRestaurent } from "../../../../tests/utils/generate";
 import { CartItemDto } from "../dto/cart-item.dto";
-import { CartDto } from "../dto/cart.dto";
 import { ICartService } from "../interfaces/ICart.service";
 
 @injectable()
 export class FakeCartService implements ICartService {
-    create(cartDto: CartDto, userUuid: string, restaurentUuid: string): Promise<CartReponse> {
+    create(cartItemDto: CartItemDto, userUuid: string, restaurentUuid: string): Promise<CartReponse> {
         return Promise.resolve(fakeCartData);
     }
     retrieve(cartUuid: string, userUuid: string): Promise<CartReponse> {
@@ -21,16 +20,10 @@ export class FakeCartService implements ICartService {
     update(cartItemDto: CartItemDto, userUuid: string, cartUuid: string): Promise<CartReponse> {
         return Promise.resolve(fakeCartData);
     }
-    delete(itemUuid: string, cartUuid: string, userUuid: string): Promise<boolean> {
-        return Promise.resolve(true);
+    delete(itemUuid: string, cartUuid: string, userUuid: string): Promise<CartReponse> {
+        return Promise.resolve(fakeCartData);
     }
 }
-
-const cartDto: CartDto = {
-    cart_item: [
-        { uuid: fakeCartItemData[0].uuid, qty: fakeCartItemData[0].qty }
-    ]
-};
 
 const cartItemDto: CartItemDto = {
     uuid: fakeCartItemData[0].uuid,
@@ -57,7 +50,7 @@ describe('Cart Controller', () => {
     describe('Create a Cart', () => {
         it('Index', (done) => {
             agent.post(`/cart/restaurent/${fakeRestaurent.uuid}`)
-                .send(cartDto)
+                .send(cartItemDto)
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(201, done);
         });

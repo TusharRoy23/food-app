@@ -1,45 +1,37 @@
 import { Container } from 'inversify';
 import { TYPES } from './type.core';
 import { DatabaseService } from './service/database.service';
+import { IDatabaseService } from './interface/IDatabase.service';
 
 /* Shared Service Import */
 import { Logger } from '../shared/services/logger.service';
 import { JsonWebTokenService } from '../shared/services/jsonWebToken.service';
-import { IJsonWebTokenService } from '../shared/interfaces/IJsonWebToken.service';
+
+/* Shared Repository Import */
+import { ICartSharedRepo, IUserSharedRepo, IRestaurentSharedRepo, IJsonWebTokenService, IItemSharedRepository, IOrderSharedRepository } from '../shared/interfaces/IIndexShared.repository';
+import { CartSharedRepo, UserSharedRepo, RestaurentSharedRepo, ItemSharedRepository, OrderSharedRepository } from '../shared/repositories/indexShared.repository';
 
 /* All Controller Import */
 import '../modules/index.controller';
 
 /* Auth Import */
-import { IAuthRepository } from '../modules/auth/interfaces/IAuth.repository';
-import { AuthRepository } from '../modules/auth/repository/auth.repository';
-import { IAuthService } from '../modules/auth/interfaces/IAuth.service';
-import { AuthService } from '../modules/auth/service/auth.service';
+import { IAuthRepository, AuthRepository, IAuthService, AuthService } from '../modules/auth/auth.module';
 
 /* User Import */
-import { IUserRepository } from '../modules/user/interfaces/IUser.repository';
-import { UserRepository } from '../modules/user/repository/user.repository';
-import { IUserService } from '../modules/user/interfaces/IUser.service';
-import { UserService } from '../modules/user/service/user.service';
-import { IDatabaseService } from './interface/IDatabase.service';
+import { IUserRepository, IUserService, UserRepository, UserService } from '../modules/user/user.module';
+
 
 /* Restaurent Import */
-import { IRestaurentRepository } from '../modules/restaurent/interfaces/IRestaurent.repository';
-import { RestaurentRepository } from '../modules/restaurent/repository/restaurent.repository';
-import { IRestaurentService } from '../modules/restaurent/interfaces/IRestaurent.service';
-import { RestaurentService } from '../modules/restaurent/service/restaurent.service';
+import { IRestaurentRepository, IRestaurentService, RestaurentRepository, RestaurentService } from '../modules/restaurent/restaurent.module';
 
 /* Item Import */
-import { IItemRepository } from '../modules/item/interfaces/IItem.repository';
-import { ItemRepository } from '../modules/item/repository/item.repository';
-import { ItemService } from '../modules/item/service/item.service';
-import { IItemService } from '../modules/item/interfaces/IItem.service';
+import { IItemRepository, IItemService, ItemRepository, ItemService } from '../modules/item/item.module';
 
 /* Cart Import */
-import { ICartRepository } from '../modules/cart/interfaces/ICart.repository';
-import { CartRepository } from '../modules/cart/repository/cart.repository';
-import { ICartService } from '../modules/cart/interfaces/ICart.service';
-import { CartService } from '../modules/cart/service/cart.service';
+import { ICartRepository, CartRepository, ICartService, CartService } from '../modules/cart/cart.module';
+
+/* Order Import */
+import { IOrderRepository, IOrderService, OrderRepository, OrderService } from '../modules/order/order.module';
 
 /* Middleware Import */
 import { AuthenticationMiddleware } from '../middlewares/authentication.middleware';
@@ -51,6 +43,13 @@ container.bind<IDatabaseService>(TYPES.IDatabaseService).to(DatabaseService);
 /* Shared Service Bind */
 container.bind(TYPES.Logger).to(Logger);
 container.bind<IJsonWebTokenService>(TYPES.IJsonWebTokenService).to(JsonWebTokenService);
+
+/* Shared Repository Bind */
+container.bind<ICartSharedRepo>(TYPES.ICartSharedRepo).to(CartSharedRepo);
+container.bind<IUserSharedRepo>(TYPES.IUserSharedRepo).to(UserSharedRepo);
+container.bind<IRestaurentSharedRepo>(TYPES.IRestaurentSharedRepo).to(RestaurentSharedRepo);
+container.bind<IItemSharedRepository>(TYPES.IItemSharedRepo).to(ItemSharedRepository);
+container.bind<IOrderSharedRepository>(TYPES.IOrderSharedRepository).to(OrderSharedRepository);
 
 /* Auth Module bind */
 container.bind<IAuthRepository>(TYPES.IAuthRepository).to(AuthRepository);
@@ -72,7 +71,12 @@ container.bind<IItemService>(TYPES.IItemService).to(ItemService);
 container.bind<ICartRepository>(TYPES.ICartRepository).to(CartRepository);
 container.bind<ICartService>(TYPES.ICartService).to(CartService);
 
+/* Order Module bind */
+container.bind<IOrderService>(TYPES.IOrderService).to(OrderService);
+container.bind<IOrderRepository>(TYPES.IOrderRepository).to(OrderRepository);
+
 /* Middleware bind */
 container.bind<AuthenticationMiddleware>(TYPES.AuthenticationMiddleware).to(AuthenticationMiddleware);
+
 
 export default container;

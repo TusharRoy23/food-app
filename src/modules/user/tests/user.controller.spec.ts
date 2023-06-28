@@ -28,7 +28,7 @@ describe('User Controller Test', () => {
                 .set("Authorization", `Bearer ${accessToken}`)
                 .expect(200, done);
         });
-    
+
         it('Should Responsed with a user', (done) => {
             agent.get(`/users/${fakeUser.uuid}`)
                 .set("Authorization", `Bearer ${accessToken}`)
@@ -40,7 +40,7 @@ describe('User Controller Test', () => {
                 .catch(error => {
                     console.log('error: ', error);
                     done();
-                })
+                });
         });
     });
 });

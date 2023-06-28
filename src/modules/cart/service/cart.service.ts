@@ -13,8 +13,8 @@ export class CartService implements ICartService {
         @inject(TYPES.ICartRepository) private readonly cartRepo: ICartRepository
     ) { }
 
-    async create(cartDto: CartDto, userUuid: string, restaurentUuid: string): Promise<CartReponse> {
-        return await this.cartRepo.create(cartDto, userUuid, restaurentUuid);
+    async create(cartItemDto: CartItemDto, userUuid: string, restaurentUuid: string): Promise<CartReponse> {
+        return await this.cartRepo.create(cartItemDto, userUuid, restaurentUuid);
     }
 
     async retrieve(cartUuid: string, userUuid: string): Promise<CartReponse> {
@@ -25,7 +25,7 @@ export class CartService implements ICartService {
         return await this.cartRepo.update(cartItemDto, userUuid, cartUuid);
     }
 
-    async delete(itemUuid: string, cartUuid: string, userUuid: string): Promise<boolean> {
+    async delete(itemUuid: string, cartUuid: string, userUuid: string): Promise<CartReponse> {
         return await this.cartRepo.delete(itemUuid, cartUuid, userUuid);
     }
 

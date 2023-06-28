@@ -3,7 +3,6 @@ import { CartReponse } from '../../../shared/utils/response.utils';
 import { fakeCartData, fakeCartItemData } from "../../../../tests/utils/fake.service";
 import { fakeRestaurent, fakeUser } from "../../../../tests/utils/generate";
 import { CartItemDto } from '../dto/cart-item.dto';
-import { CartDto } from "../dto/cart.dto";
 import { ICartRepository } from "../interfaces/ICart.repository";
 import { CartService } from "../service/cart.service";
 
@@ -14,13 +13,7 @@ describe('Cart Service', () => {
         create: jest.fn(() => Promise.resolve(fakeCartData)),
         retrieve: jest.fn(() => Promise.resolve(fakeCartData)),
         update: jest.fn(() => Promise.resolve(fakeCartData)),
-        delete: jest.fn(() => Promise.resolve(true)),
-    };
-
-    const cartDto: CartDto = {
-        cart_item: [
-            { uuid: fakeCartItemData[0].uuid, qty: fakeCartItemData[0].qty }
-        ]
+        delete: jest.fn(() => Promise.resolve(fakeCartData)),
     };
 
     const cartItemDto: CartItemDto = {
@@ -28,7 +21,7 @@ describe('Cart Service', () => {
         qty: fakeCartItemData[0].qty
     };
 
-    beforeEach(() => {
+    beforeAll(() => {
         cartService = new CartService(mockCartRepo);
     });
 
@@ -38,17 +31,17 @@ describe('Cart Service', () => {
 
     describe('Call create method', () => {
         it('Create method response', async () => {
-            const response = await cartService.create(cartDto, fakeUser.uuid, fakeRestaurent.uuid);
+            const response = await cartService.create(cartItemDto, fakeUser.uuid, fakeRestaurent.uuid);
             expect(response.cart_amount).toEqual(fakeCartData.cart_amount);
         });
 
         it('Should call create method', async () => {
-            await cartService.create(cartDto, fakeUser.uuid, fakeRestaurent.uuid);
+            await cartService.create(cartItemDto, fakeUser.uuid, fakeRestaurent.uuid);
             expect(mockCartRepo.create).toHaveBeenCalled();
         });
 
         it('Should call create method only once', async () => {
-            await cartService.create(cartDto, fakeUser.uuid, fakeRestaurent.uuid);
+            await cartService.create(cartItemDto, fakeUser.uuid, fakeRestaurent.uuid);
             expect(mockCartRepo.create).toBeCalledTimes(1);
         });
     });

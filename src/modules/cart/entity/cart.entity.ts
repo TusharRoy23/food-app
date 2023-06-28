@@ -5,6 +5,7 @@ import { Restaurent } from "../../restaurent/entity/restaurent.entity";
 import { User } from "../../user/entity/user.entity";
 import { CartStatus } from "../../../shared/utils/enum";
 import { CartItem } from "./cart-item.entity";
+import { OrderDiscount } from "../../../modules/order/entity/order-discount.entity";
 
 @Entity()
 export class Cart {
@@ -31,8 +32,19 @@ export class Cart {
     )
     cart_item: CartItem[];
 
-    @Column({ nullable: false, type: 'float' })
+    @ManyToOne(
+        type => OrderDiscount
+    )
+    order_discount: OrderDiscount;
+
+    @Column({ nullable: false, type: 'float', default: 0.0 })
     cart_amount: number;
+
+    @Column({ nullable: false, type: 'float', default: 0.0 })
+    total_amount: number;
+
+    @Column({ nullable: false, type: 'float', default: 0.0 })
+    rebate_amount: number;
 
     @Column({ nullable: false, type: 'timestamp' })
     cart_date: string;

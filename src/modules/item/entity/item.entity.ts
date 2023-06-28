@@ -59,14 +59,17 @@ export class Item {
     @Column({ nullable: false, type: 'float', default: 0 })
     price: number;
 
-    @Column({ nullable: true, type: 'timestamp' })
-    discount_start_date?: string;
+    @Column({ nullable: true, type: 'float', default: 0 })
+    max_order_qty?: number;
 
-    @Column({ nullable: true, type: 'timestamp' })
-    discount_end_date?: string;
+    @Column({ nullable: true, type: 'float', default: 0 })
+    min_order_qty?: number;
 
     @Column({ nullable: true, type: 'float', default: 0 })
     discount_rate?: number;
+
+    @Column({ nullable: true, type: 'timestamp' })
+    created_date?: string;
 
     @Column({
         type: 'enum',

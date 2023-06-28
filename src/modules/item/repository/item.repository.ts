@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Item } from "../entity/item.entity";
 import { IItemRepository } from "../interfaces/IItem.repository";
 import { IDatabaseService } from "../../../core/interface/IDatabase.service";
-import { InternalServerErrorException, NotFoundException } from "../../../shared/errors/all.exception";
+import { NotFoundException, throwException } from "../../../shared/errors/all.exception";
 import { CreateItemDto, UpdateItemDto } from "../dto/index.dto";
 import { Restaurent } from "../../restaurent/entity/restaurent.entity";
 import { ItemStatus } from "../../../shared/utils/enum";
@@ -27,7 +27,7 @@ export class ItemRepository implements IItemRepository {
 
             return 'Item successfully created';
         } catch (error: any) {
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -41,7 +41,7 @@ export class ItemRepository implements IItemRepository {
 
             return item as Item[];
         } catch (error: any) {
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -57,14 +57,14 @@ export class ItemRepository implements IItemRepository {
                 .output([
                     'uuid', 'name', 'icon', 'image', 'item_type',
                     'meal_type', 'meal_state', 'meal_flavor', 'price',
-                    'discount_start_date', 'discount_end_date', 'discount_rate',
-                    'item_status'
+                    'max_order_qty', 'min_order_qty', 'discount_rate',
+                    'item_status', 'created_date'
                 ])
                 .execute();
 
             return updatedItem.raw[0] as Item;
         } catch (error: any) {
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -81,7 +81,7 @@ export class ItemRepository implements IItemRepository {
 
             return 'Successfully deleted';
         } catch (error: any) {
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 
@@ -99,8 +99,7 @@ export class ItemRepository implements IItemRepository {
             }
             throw new NotFoundException('Item Not Found');
         } catch (error: any) {
-            if (error instanceof NotFoundException) throw new NotFoundException('Item Not Found');
-            throw new InternalServerErrorException(`${error.message}`);
+            return throwException(error);
         }
     }
 }
