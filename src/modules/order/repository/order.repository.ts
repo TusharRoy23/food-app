@@ -69,7 +69,7 @@ export class OrderRepository implements IOrderRepository {
             for (let index = 0; index < cartItem.length; index++) {
                 const item = cartItem[index] as CartItem;
                 const itemInfo: Item = await this.sharedItemRepo.restaurentItemInfo(item.item!.uuid, cart.restaurent.uuid);
-                const discountRate = itemInfo.discount_rate > 0 ? itemInfo.discount_rate / 100 : 1;
+                const discountRate = itemInfo?.discount_rate! > 0 ? itemInfo?.discount_rate! / 100 : 1;
                 const amount = item.qty * (itemInfo.price * discountRate);
                 orderAmount += amount;
                 tempCartItem.push({

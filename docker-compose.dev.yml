@@ -70,9 +70,22 @@ services:
     restart: unless-stopped
     networks:
       - food_app_api
+  redis:
+    image: redis/redis-stack-server:${REDIS_VERSION}
+    env_file:
+      - ./env/.env.dev
+    container_name: redis-stack-server
+    volumes:
+      - redis-data:/data
+    networks:
+      - food_app_api
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    restart: unless-stopped
 networks:
   food_app_api:
 volumes:
   pgdata:
   pgadmin-data:
   foodEsData01:
+  redis-data:

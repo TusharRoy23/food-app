@@ -1,0 +1,28 @@
+name: Agentic AI Code Review
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+    issue_comment:
+        types: [created]
+
+jobs:
+    review:
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write # Required for OIDC
+            contents: write
+            pull-requests: write
+            issues: write # For posting comments
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Full history for diff comparison
+
+            - uses: TusharRoy23/ai-code-reviewer@v0.0.9
+              with:
+                  trigger-phrase: "@ai-code-reviewer review"
+                  review-mode: "full"
+                  #   llm: ${{ secrets.LLM }}
+                  #   llm-api-key: ${{ secrets.LLM_API_KEY }}
