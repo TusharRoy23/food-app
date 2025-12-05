@@ -20,7 +20,7 @@ jobs:
               with:
                   fetch-depth: 0 # Full history for diff comparison
 
-            - uses: TusharRoy23/ai-code-reviewer@v0.0.7
+            - uses: TusharRoy23/ai-code-reviewer@v0.0.8
               with:
                   trigger-phrase: "@ai-code-reviewer review"
                   review-mode: "full"
